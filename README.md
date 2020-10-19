@@ -8,6 +8,7 @@ Repo for COMP472 assignments/projects
 ||||
 ||||
 | Louis-Benjamin Durocher   | LouisBenjamin   		|Base-MLP, Best-MLP			|
+| Patricia Nunes   | patnunes   		|Base-DT, Best-DT			|
 
 # How to run models
 
