@@ -1,4 +1,4 @@
-https://github.com/patnunes/COMP472
+Github URL: https://github.com/patnunes/COMP472
 # COMP472
 Repo for COMP472 assignments/projects
 
