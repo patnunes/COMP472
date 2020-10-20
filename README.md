@@ -9,7 +9,6 @@ Repo for COMP472 assignments/projects
 | Patricia Nunes (40006956) | patnunes   		|Base-DT, Best-DT			|
 | Alan Giamatti (40041674)   | agiamatti   		|GNB, Perceptron		|
 
-
 # How to run models
 
 1. cd to the directry where this repo was cloned in and type
