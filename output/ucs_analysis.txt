@@ -1,0 +1,10 @@
+Total length of search: 0
+Total length of solution: 0
+Total number of no solution: 0
+Total cost: 0
+Total execution time: 0
+Average length of search: 0.0
+Average length of solution: 0.0
+Average number of no solution: 0.0
+Average cost: 0.0
+Average execution time: 0.0
