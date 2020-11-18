@@ -75,7 +75,7 @@ def uniform_cost(puzzle):
                     openlist.sort(node.g_fxn)
             
         now = time.time()
-        if (now - start) > 60:
+        if (now - start) > 600:
             return
 
 
