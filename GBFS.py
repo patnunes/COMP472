@@ -3,6 +3,7 @@ import time
 from node import Node
 from puzzle import Puzzle
 
+
 def best_first_search(puzzle):
     start = time.time()
     node = Node(puzzle)
@@ -11,7 +12,7 @@ def best_first_search(puzzle):
     closedlist = set()
 
     while openlist:
-        openlist.sort(key=lambda x: x.h_fxn)
+        openlist.sort(key=lambda x: x.h_fxn, reverse=True)
         node = openlist.pop()
         if node.state.goal_test():
             print(node)
@@ -21,15 +22,12 @@ def best_first_search(puzzle):
             return
         closedlist.add(node)
         for child in node.expand(puzzle):
-            print(child)
-            print("Closedlist size: ", len(closedlist), ", Open list size: ",
-                  len(openlist))
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
-            # elif child in openlist:
-            #     if node.less_f_fxn(child):
-            #         openlist.remove(child)
-            #         openlist.append(node)
+            elif child in openlist:
+                if child.f_fxn > node.f_fxn:
+                    openlist.remove(child)
+                    openlist.append(child)
 
         now = time.time()
         if (now - start) > 60:
