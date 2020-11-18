@@ -73,7 +73,9 @@ class Puzzle:
             return
         else:
             self.swapPositions(blank_index, blank_index+self.columns)
+            print("self")
             self.cost += 1
+            print("self after"+self.cost)
     
     def moveDown(self):
         blank_index = self.find_blank(self.puzzle)
@@ -161,9 +163,9 @@ class Puzzle:
             elif blank_index == self.topRight:
                 possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','UP', 'RIGHT'])
             elif blank_index == self.botLeft:
-                possible_actions.append('WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'LEFT')
+                possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'LEFT'])
             elif blank_index == self.botRight:
-                possible_actions.append('WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'RIGHT')
+                possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'RIGHT'])
         else:
             if col_number == 0:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT'])
@@ -172,13 +174,13 @@ class Puzzle:
             elif blank_index >= self.puzzle_size - self.columns:
                 possible_actions.extend(['DOWN', 'RIGHT', 'LEFT'])
             elif blank_index < self.columns:
-                possible_actions.extend(['TOP', 'RIGHT', 'LEFT'])
+                possible_actions.extend(['UP', 'RIGHT', 'LEFT'])
             else:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT', 'RIGHT'])
         return possible_actions
     
     def result(self, action):
-        blank_index = self.find_blank(self.puzzle)
+        #blank_index = self.find_blank(self.puzzle)
         resulting_state = copy.deepcopy(self)
         if action == 'UP':
             resulting_state.moveUp()
@@ -196,7 +198,6 @@ class Puzzle:
             resulting_state.diagAdjacent()
         elif action == 'DIAG_ACROSS':
             resulting_state.diagAcross()
-        resulting_state.display_state()
         return resulting_state
             
     def h0(self):
