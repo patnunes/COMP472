@@ -14,6 +14,9 @@ class Puzzle:
         self.topRight = self.columns -1
         self.botLeft =  self.puzzle_size-self.columns
         self.botRight = self.puzzle_size-1
+
+    def __eq__(self, other):
+        return isinstance(other, Puzzle) and self.state == other.state
     
     #display current state of puzzle
     def __repr__(self):
@@ -31,10 +34,6 @@ class Puzzle:
     def find_blank(self, state):
         return state.index(0)
     
-    
-    
-            
-    #TODO: make is work for 3x3
     def goal_state(self):
         core_indices = (np.arange(self.columns*self.rows) + 1) % (self.columns*self.rows)
         goal_state_1 = core_indices.reshape(self.rows,self.columns).reshape(1,self.rows*self.columns).tolist()
@@ -161,9 +160,9 @@ class Puzzle:
             elif blank_index == self.topRight:
                 possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','UP', 'RIGHT'])
             elif blank_index == self.botLeft:
-                possible_actions.append('WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'LEFT')
+                possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'LEFT'])
             elif blank_index == self.botRight:
-                possible_actions.append('WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'RIGHT')
+                possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS','DOWN', 'RIGHT'])
         else:
             if col_number == 0:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT'])
@@ -172,13 +171,13 @@ class Puzzle:
             elif blank_index >= self.puzzle_size - self.columns:
                 possible_actions.extend(['DOWN', 'RIGHT', 'LEFT'])
             elif blank_index < self.columns:
-                possible_actions.extend(['TOP', 'RIGHT', 'LEFT'])
+                possible_actions.extend(['UP', 'RIGHT', 'LEFT'])
             else:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT', 'RIGHT'])
         return possible_actions
     
     def result(self, action):
-        blank_index = self.find_blank(self.puzzle)
+        #blank_index = self.find_blank(self.puzzle)
         resulting_state = copy.deepcopy(self)
         if action == 'UP':
             resulting_state.moveUp()
@@ -196,7 +195,6 @@ class Puzzle:
             resulting_state.diagAdjacent()
         elif action == 'DIAG_ACROSS':
             resulting_state.diagAcross()
-        resulting_state.display_state()
         return resulting_state
             
     def h0(self):
