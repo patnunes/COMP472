@@ -21,7 +21,7 @@ def best_first_search(puzzle):
                   len(openlist), "paths remain in the openlist")
             return
         closedlist.add(node)
-        for child in node.expand(puzzle):
+        for child in node.expand():
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
             elif child in openlist:
