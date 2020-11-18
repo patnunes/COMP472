@@ -155,7 +155,6 @@ class Puzzle:
 
         blank_index = self.find_blank()
         col_number = blank_index % self.columns
-        print('blank in', blank_index)
         if (self.isCorner(blank_index)):
             if blank_index == self.topLeft:
                 possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT'])
