@@ -22,9 +22,6 @@ def a_star(puzzle):
             return
         closedlist.add(node)
         for child in node.expand(puzzle):
-            print(child)
-            print("Closedlist size: ", len(closedlist), ", Open list size: ",
-                  len(openlist))
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
             elif child in openlist:
