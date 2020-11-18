@@ -38,8 +38,8 @@ class Node:
         self.f_fxn = self.g_fxn + self.h_fxn
 
     def __repr__(self):
-        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5}, id={6}, parent_id={7})'.format(
-            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth, self.id, self.parent.id
+        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5}, id={6})'.format(
+            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth, self.id
         )
 
     def expand(self):
@@ -84,7 +84,7 @@ def uniform_cost(puzzle):
     visited_nodes = 0
 
     while openlist:
-        openlist.sort(key=lambda x: x.g_fxn)
+        openlist.sort(key=lambda x: x.g_fxn, reverse = True)
         node = openlist.pop()
         if node.state.goal_test():
             print(node)
@@ -107,20 +107,21 @@ def uniform_cost(puzzle):
                 openlist.append(child)
                 print(node.id, "appending: ", child.id)
             elif child in openlist:
-                if child.g_fxn > node.g_fxn:
+                 if child.g_fxn > node.g_fxn:
                     openlist.remove(child)
-                    openlist.append(node)
+                    openlist.append(child)
                     print('remove', 'append')
 
         now = time.time()
         if (now - start) > 60:
+            print(now)
             print('Failed to excecute solution within time restriction')
             return
 
 
-puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
+puzzle1 = Puzzle([1, 2, 0, 3, 5, 6, 7, 4], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
-puzzle3 = Puzzle([1, 3, 2, 4, 6, 5, 7, 1], 4, 2)
+puzzle3 = Puzzle([1, 0, 3, 6, 5, 2, 7, 4], 4, 2)
 
 uniform_cost(puzzle1)
 # print(puzzle2 == puzzle1)
