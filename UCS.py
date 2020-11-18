@@ -1,4 +1,5 @@
 import time
+import random
 from puzzle import Puzzle
 
 
@@ -6,6 +7,7 @@ class Node:
     """A node. Contains pointer to the parent"""
 
     def __init__(self, state, parent=None, action=None, g_fxn=0):
+        self.id = random.randrange(2147483647)
         self.state = state
         self.parent = parent
         self.g_fxn = 0  # Distance to start node, cost function
@@ -32,8 +34,8 @@ class Node:
         self.f_fxn = new_f
 
     def __repr__(self):
-        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5})'.format(
-            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth
+        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5}, id={6}, parent_id={7})'.format(
+            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth, self.id, self.parent.id
         )
 
     def less_h_fxn(self, other):
@@ -108,5 +110,5 @@ def uniform_cost(puzzle):
 
 
 puzzle1 = Puzzle([0, 3, 2, 4, 6, 5, 7, 1], 4, 2)
-
+puzzle2 = Puzzle([1, 3, 2, 4, 6, 5, 7, 1], 4, 2)
 uniform_cost(puzzle1)
