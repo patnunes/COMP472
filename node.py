@@ -12,7 +12,7 @@ class Node:
         self.state = state
         self.parent = parent
         self.g_fxn = 0  # Distance to start node, cost function
-        self.h_fxn = 0  # Distance to goal node, heuristic
+        self.set_h()
         self.f_fxn = 0  # Total cost, cost function + heuristic
         self.action = action
         self.depth = 0
@@ -57,8 +57,9 @@ class Node:
         next_state = self.state.result(action)
         next_node = Node(next_state, self, action)
         next_node.set_g(self.g_fxn+next_state.get_cost())
-        next_node.set_f()
         next_node.set_h()
+        next_node.set_f()
+        
         return next_node
 
     def solution_path(self):
