@@ -37,7 +37,7 @@ class Node:
             self.h_fxn = self.h0()
 
     def set_f(self):
-        self.f_fxn = self.g_fxn + self.h_fxn
+        self.f_fxn = 0.01*self.g_fxn + 0.99*self.h_fxn
 
     def __repr__(self):
         return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5}, id={6})'.format(
@@ -85,7 +85,7 @@ class Node:
             if self.state.goal_state_2[i] != self.state.puzzle[i]:
                 goal_2 += 1
 
-        return min(goal_1, goal_2)
+        return goal_1
 
     def h2(self) -> int:
         grid1 = self.state.puzzle
