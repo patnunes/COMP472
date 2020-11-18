@@ -6,7 +6,7 @@ from puzzle import Puzzle
 
 def a_star(puzzle):
     start = time.time()
-    node = Node(puzzle, heuristic="h2")
+    node = Node(puzzle)
     openlist = []
     openlist.append(node)
     closedlist = set()
@@ -16,11 +16,12 @@ def a_star(puzzle):
         print("OPEN SIZE: ")
         print(len(openlist))
         print("\n")
-        openlist.sort(key=lambda x: x.h_fxn, reverse=True)
+        openlist.sort(key=lambda x: x.f_fxn, reverse=True)
         node = openlist.pop()
         closedlist.add(node)
         if node.h_fxn == 0:
             print(node)
+            print("node depth", node.depth)
             print("Solution achieved")
             print(len(closedlist), "paths have been expanded and",
                   len(openlist), "paths remain in the openlist")
@@ -40,7 +41,7 @@ def a_star(puzzle):
                 continue
 
             for openNode in openlist:
-                if openNode.state == child.state:
+                if openNode.state == child.state and child.g_fxn > openNode.g_fxn:
                     continue_loop = True
                     break
 
@@ -53,7 +54,6 @@ def a_star(puzzle):
         if (now - start) > 60:
             print('Failed to excecute solution within time restriction')
             return
-
 
 puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
