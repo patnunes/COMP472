@@ -4,9 +4,9 @@ from node import Node
 from puzzle import Puzzle
 
 
-def best_first_search(puzzle):
+def best_first_search(puzzle, heuristic='h2'):
     start = time.time()
-    node = Node(puzzle)
+    node = Node(puzzle, heuristic=heuristic)
     openlist = []
     openlist.append(node)
     closedlist = set()
@@ -22,12 +22,13 @@ def best_first_search(puzzle):
             return
         closedlist.add(node)
         for child in node.expand():
+            print(child)
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
-            elif child in openlist:
-                if child.f_fxn > node.f_fxn:
-                    openlist.remove(child)
-                    openlist.append(child)
+            # elif child in openlist:
+            #     if child.f_fxn < node.f_fxn:
+            #         openlist.remove(child)
+            #         openlist.append(node)
 
         now = time.time()
         if (now - start) > 60:
@@ -37,8 +38,6 @@ def best_first_search(puzzle):
 
 puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
-puzzle3 = Puzzle([1, 3, 2, 4, 6, 5, 7, 1], 4, 2)
+puzzle3 = Puzzle([1, 0, 3, 6, 5, 2, 7, 4], 4, 2)
 
-best_first_search(puzzle1)
-print(puzzle2 == puzzle1)
-print(puzzle3 == puzzle1)
+best_first_search(puzzle3)

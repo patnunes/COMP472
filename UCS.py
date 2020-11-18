@@ -28,6 +28,6 @@ def uniform_cost(puzzle):
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
             elif child in openlist:
-                if child.g_fxn > node.g_fxn:
+                if child.g_fxn < node.g_fxn:
                     openlist.remove(child)
                     openlist.append(child)
