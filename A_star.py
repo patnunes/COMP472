@@ -12,26 +12,43 @@ def a_star(puzzle):
     closedlist = set()
 
     while openlist:
-        openlist.sort(key=lambda x: x.f_fxn)
+
+        print("OPEN SIZE: ")
+        print(len(openlist))
+        print("\n")
+        openlist.sort(key=lambda x: x.h_fxn, reverse=True)
         node = openlist.pop()
-        if node.state.goal_test():
+        closedlist.add(node)
+        if node.h_fxn == 0:
             print(node)
             print("Solution achieved")
             print(len(closedlist), "paths have been expanded and",
                   len(openlist), "paths remain in the openlist")
             return
-        closedlist.add(node)
-        for child in node.expand(puzzle):
+
+        for child in node.expand():
+            continue_loop = False
             print(child)
             print("Closedlist size: ", len(closedlist), ", Open list size: ",
                   len(openlist))
-            if child not in closedlist and child not in openlist:
-                openlist.append(child)
-            elif child in openlist:
-                if node.less_f_fxn(child):
-                    openlist.remove(child)
-                    openlist.append(child)
+            for closedNode in closedlist:
+                if child.state == closedNode.state and closedNode.g_fxn < child.g_fxn:
+                    continue_loop = True
+                    break
 
+            if continue_loop:
+                continue
+
+            for openNode in openlist:
+                if openNode.state == child.state:
+                    continue_loop = True
+                    break
+
+            if continue_loop:
+                continue
+
+            openlist.append(child)
+        
         now = time.time()
         if (now - start) > 60:
             print('Failed to excecute solution within time restriction')
@@ -40,8 +57,6 @@ def a_star(puzzle):
 
 puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
-puzzle3 = Puzzle([1, 3, 2, 4, 6, 5, 7, 1], 4, 2)
+puzzle3 = Puzzle([1, 0, 3, 6, 5, 2, 7, 4], 4, 2)
 
-a_star(puzzle1)
-print(puzzle2 == puzzle1)
-print(puzzle3 == puzzle1)
+a_star(puzzle2)
