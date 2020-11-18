@@ -29,8 +29,8 @@ class Puzzle:
 
     def __repr__(self):
         output = ''
-        for i in range(self.rows):
-            output += str(self.puzzle[i*self.columns:(i+1)*self.columns])+'\n'
+        for i in range(self.puzzle_size):
+            output += str(self.puzzle[i]) + ' '
         return output
 
     def get_puzzle(self):
@@ -44,9 +44,6 @@ class Puzzle:
 
     def goal_test(self):
         current_state = np.array(self.puzzle)
-        print(current_state)
-        print(self.goal_state_1)
-        print(self.goal_state_2)
         if np.array_equal(current_state, self.goal_state_1):
             print('Goal state 1 achieved.')
             return True
