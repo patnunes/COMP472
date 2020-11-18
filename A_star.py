@@ -21,7 +21,7 @@ def a_star(puzzle):
                   len(openlist), "paths remain in the openlist")
             return
         closedlist.add(node)
-        for child in node.expand(puzzle):
+        for child in node.expand():
             print(child)
             print("Closedlist size: ", len(closedlist), ", Open list size: ",
                   len(openlist))
