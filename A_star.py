@@ -27,6 +27,7 @@ def a_star(puzzle):
             return
 <<<<<<< HEAD
         closedlist.add(node)
+<<<<<<< HEAD
         for child in node.expand():
 =======
 
@@ -51,6 +52,15 @@ def a_star(puzzle):
 
             if continue_loop:
                 continue
+=======
+        for child in node.expand(puzzle):
+            if child not in closedlist and child not in openlist:
+                openlist.append(child)
+            elif child in openlist:
+                if node.less_f_fxn(child):
+                    openlist.remove(child)
+                    openlist.append(child)
+>>>>>>> 5a18425... added heuristics
 
             openlist.append(child)
         

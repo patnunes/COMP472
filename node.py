@@ -1,16 +1,16 @@
+import numpy as np
 import random
 from puzzle import Puzzle
-
-TIME_RESTRICTION = 60
 
 
 class Node:
     """A node. Contains pointer to the parent"""
 
-    def __init__(self, state, parent=None, action=None, heuristic=''):
+    def __init__(self, state, parent=None, action=None, heuristic='h1'):
         self.id = random.randrange(2147483647)
         self.state = state
         self.parent = parent
+        self.heuristic = heuristic
         self.g_fxn = 0  # Distance to start node, cost function
         self.set_h()
         self.f_fxn = 0  # Total cost, cost function + heuristic
@@ -29,11 +29,12 @@ class Node:
         self.g_fxn = new_g
 
     def set_h(self):
-        temp = 0
-        for i in range(0, self.state.puzzle_size):
-            if self.state.goal_state_1[i] != self.state.puzzle[i]:
-                temp += 1
-        self.h_fxn = temp
+        if self.heuristic == 'h2':
+            self.h_fxn = self.h2()
+        elif self.heuristic == 'h1':
+            self.h_fxn = self.h1()
+        else:
+            self.h_fxn = self.h0()
 
     def set_f(self):
         self.f_fxn = self.g_fxn + self.h_fxn
@@ -69,3 +70,32 @@ class Node:
             path_back.append(node)
             node = node.parent
         return list(reversed(path_back))
+
+    def h0(self) -> int:
+        if self.state.goal_test() is True:
+            return 1
+        return 0
+
+    def h1(self) -> int:
+        goal_1 = 0
+        goal_2 = 0
+        for i in range(0, self.state.puzzle_size):
+            if self.state.goal_state_1[i] != self.state.puzzle[i]:
+                goal_1 += 1
+            if self.state.goal_state_2[i] != self.state.puzzle[i]:
+                goal_2 += 1
+
+        return max(goal_1, goal_2)
+
+    def h2(self) -> int:
+        grid1 = self.state.puzzle
+        grid2 = self.state.goal_state_1
+        grid3 = self.state.goal_state_2
+        sub = np.subtract(grid1, grid2)
+        diff = np.abs(sub)
+        return_val_1 = np.sum(diff.flatten())
+
+        sub = np.subtract(grid1, grid3)
+        diff = np.abs(sub)
+        return_val_2 = np.sum(diff.flatten())
+        return max(return_val_1, return_val_2)
