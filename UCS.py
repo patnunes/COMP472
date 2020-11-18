@@ -13,6 +13,15 @@ class Node:
         self.depth = 0
         if parent:
             self.depth = parent.depth + 1
+    
+    def __hash__(self):
+        return hash(self.state)
+
+    def __eq__(self, other):
+        for i in range(self.puzzle_size):
+            if (self.puzzle[i] != other.puzzle[i]):
+                return False
+        return True
             
     def set_g(self, new_g):
         self.g_fxn = new_g
@@ -45,9 +54,8 @@ class Node:
 
     def child_node(self, puzzle, action):
         next_state = puzzle.result(action)
-        print(puzzle.cost)
         next_node = Node(next_state, self, action)
-        next_node.set_g(self.g_fxn+puzzle.cost)
+        next_node.set_g(self.g_fxn+next_state.get_cost())
         return next_node
 
     def solution_path(self):
@@ -58,8 +66,7 @@ class Node:
             node = node.parent
         return list(reversed(path_back))
 
-    def __eq__(self, other):
-        return isinstance(other, Node) and self.state == other.state
+    
 
 def uniform_cost(puzzle):
     start = time.time()
@@ -76,13 +83,13 @@ def uniform_cost(puzzle):
         closedlist.append(node.state)
         for child in node.expand(puzzle):
             print(child)
+            
             if child.state not in closedlist and child not in openlist:
                  openlist.append(child)
             elif child in openlist:
                 if node.less_g_fxn(child):
                     del openlist[child]
                     openlist.append(child)
-                    openlist.sort(node.g_fxn)
             
         now = time.time()
         if (now - start) > 60:

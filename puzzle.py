@@ -14,6 +14,9 @@ class Puzzle:
         self.topRight = self.columns -1
         self.botLeft =  self.puzzle_size-self.columns
         self.botRight = self.puzzle_size-1
+
+    def __eq__(self, other):
+        return isinstance(other, Puzzle) and self.state == other.state
     
     #display current state of puzzle
     def __repr__(self):
@@ -31,10 +34,6 @@ class Puzzle:
     def find_blank(self, state):
         return state.index(0)
     
-    
-    
-            
-    #TODO: make is work for 3x3
     def goal_state(self):
         core_indices = (np.arange(self.columns*self.rows) + 1) % (self.columns*self.rows)
         goal_state_1 = core_indices.reshape(self.rows,self.columns).reshape(1,self.rows*self.columns).tolist()
@@ -73,9 +72,7 @@ class Puzzle:
             return
         else:
             self.swapPositions(blank_index, blank_index+self.columns)
-            print("self")
             self.cost += 1
-            print("self after"+self.cost)
     
     def moveDown(self):
         blank_index = self.find_blank(self.puzzle)
