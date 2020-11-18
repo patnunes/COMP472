@@ -1,5 +1,5 @@
-import numpy as np
 import copy
+import numpy as np
 
 
 class Puzzle:
@@ -11,10 +11,10 @@ class Puzzle:
         self.puzzle_size = (len(self.puzzle))
         self.cost = 0
 
-        self.topLeft = 0
-        self.topRight = self.columns - 1
-        self.botLeft = self.puzzle_size-self.columns
-        self.botRight = self.puzzle_size-1
+        self.top_left = 0
+        self.top_right = self.columns - 1
+        self.bot_left = self.puzzle_size-self.columns
+        self.bot_right = self.puzzle_size-1
 
         core_indices = (np.arange(self.columns*self.rows) + 1) % (self.columns*self.rows)
         self.goal_state_1 = core_indices
@@ -44,106 +44,113 @@ class Puzzle:
 
     def goal_test(self):
         current_state = np.array(self.puzzle)
-        if np.array_equal(current_state, self.goal_state_1) or np.array_equal(current_state, self.goal_state_2):
+        print(current_state)
+        print(self.goal_state_1)
+        print(self.goal_state_2)
+        if np.array_equal(current_state, self.goal_state_1):
+            print('Goal state 1 achieved.')
+            return True
+        if np.array_equal(current_state, self.goal_state_2):
+            print('Goal state 2 achieved.')
             return True
         return False
 
-    def swapPositions(self, pos1, pos2):
+    def swap_positions(self, pos1, pos2):
         current_list = self.puzzle
         current_list[pos1], current_list[pos2] = current_list[pos2], current_list[pos1]
         return current_list
 
-    def moveLeft(self):
+    def move_left(self):
         blank_index = self.find_blank()
         if (blank_index % self.columns == self.columns-1):
             return
         else:
-            self.swapPositions(blank_index, blank_index+1)
+            self.swap_positions(blank_index, blank_index+1)
             self.cost += 1
 
-    def moveRight(self):
+    def move_right(self):
         blank_index = self.find_blank()
         if (blank_index % self.columns == 0):
             return
         else:
-            self.swapPositions(blank_index, blank_index-1)
+            self.swap_positions(blank_index, blank_index-1)
             self.cost += 1
 
-    def moveUp(self):
+    def move_up(self):
         blank_index = self.find_blank()
         if (blank_index >= self.puzzle_size - self.columns):
             return
         else:
-            self.swapPositions(blank_index, blank_index+self.columns)
+            self.swap_positions(blank_index, blank_index+self.columns)
             self.cost += 1
 
-    def moveDown(self):
+    def move_down(self):
         blank_index = self.find_blank()
         if (blank_index < self.columns):
             return
         else:
-            self.swapPositions(blank_index, blank_index-self.columns)
+            self.swap_positions(blank_index, blank_index-self.columns)
             self.cost += 1
 
-    def wrapRight(self):
+    def wrap_right(self):
         blank_index = self.find_blank()
-        if (blank_index == self.botRight):
-            self.swapPositions(blank_index, self.botLeft)
+        if (blank_index == self.bot_right):
+            self.swap_positions(blank_index, self.bot_left)
             self.cost += 2
 
-        elif (blank_index == self.topRight):
-            self.swapPositions(blank_index, self.topLeft)
+        elif (blank_index == self.top_right):
+            self.swap_positions(blank_index, self.top_left)
             self.cost += 2
 
-    def wrapLeft(self):
+    def wrap_left(self):
         blank_index = self.find_blank()
-        if (blank_index == self.botLeft):
-            self.swapPositions(blank_index, self.botRight)
+        if (blank_index == self.bot_left):
+            self.swap_positions(blank_index, self.bot_right)
             self.cost += 2
-        elif (blank_index == self.topLeft):
-            self.swapPositions(blank_index, self.topRight)
+        elif (blank_index == self.top_left):
+            self.swap_positions(blank_index, self.top_right)
             self.cost += 2
 
-    def diagAcross(self):
+    def diag_across(self):
         blank_index = self.find_blank()
-        if (blank_index == self.topLeft):
-            self.swapPositions(blank_index, self.botRight)
+        if (blank_index == self.top_left):
+            self.swap_positions(blank_index, self.bot_right)
             self.cost += 3
             return
-        elif (blank_index == self.botLeft):
-            self.swapPositions(blank_index, self.topRight)
+        elif (blank_index == self.bot_left):
+            self.swap_positions(blank_index, self.top_right)
             self.cost += 3
             return
-        elif (blank_index == self.topRight):
-            self.swapPositions(blank_index, self.botLeft)
+        elif (blank_index == self.top_right):
+            self.swap_positions(blank_index, self.bot_left)
             self.cost += 3
             return
-        elif (blank_index == self.botRight):
-            self.swapPositions(blank_index, self.topLeft)
+        elif (blank_index == self.bot_right):
+            self.swap_positions(blank_index, self.top_left)
             self.cost += 3
             return
 
-    def diagAdjacent(self):
+    def diag_adjacent(self):
         blank_index = self.find_blank()
-        if (blank_index == self.topLeft):
-            self.swapPositions(blank_index, self.topLeft+self.columns+1)
+        if (blank_index == self.top_left):
+            self.swap_positions(blank_index, self.top_left+self.columns+1)
             self.cost += 3
             return
-        elif (blank_index == self.botLeft):
-            self.swapPositions(blank_index, self.botLeft-self.columns+1)
+        elif (blank_index == self.bot_left):
+            self.swap_positions(blank_index, self.bot_left-self.columns+1)
             self.cost += 3
             return
-        elif (blank_index == self.topRight):
-            self.swapPositions(blank_index, self.topRight+self.columns-1)
+        elif (blank_index == self.top_right):
+            self.swap_positions(blank_index, self.top_right+self.columns-1)
             self.cost += 3
             return
-        elif (blank_index == self.botRight):
-            self.swapPositions(blank_index, self.botRight-self.columns-1)
+        elif (blank_index == self.bot_right):
+            self.swap_positions(blank_index, self.bot_right-self.columns-1)
             self.cost += 3
             return
 
-    def isCorner(self, index):
-        if (index == self.topLeft or index == self.topRight or index == self.botLeft or index == self.botRight):
+    def is_corner(self, index):
+        if (index == self.top_left or index == self.top_right or index == self.bot_left or index == self.bot_right):
             return True
         else:
             return False
@@ -155,14 +162,14 @@ class Puzzle:
 
         blank_index = self.find_blank()
         col_number = blank_index % self.columns
-        if (self.isCorner(blank_index)):
-            if blank_index == self.topLeft:
+        if (self.is_corner(blank_index)):
+            if blank_index == self.top_left:
                 possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT'])
-            elif blank_index == self.topRight:
+            elif blank_index == self.top_right:
                 possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT'])
-            elif blank_index == self.botLeft:
+            elif blank_index == self.bot_left:
                 possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT'])
-            elif blank_index == self.botRight:
+            elif blank_index == self.bot_right:
                 possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT'])
         else:
             if col_number == 0:
@@ -180,25 +187,19 @@ class Puzzle:
     def result(self, action):
         resulting_state = copy.deepcopy(self)
         if action == 'UP':
-            resulting_state.moveUp()
+            resulting_state.move_up()
         elif action == 'DOWN':
-            resulting_state.moveDown()
+            resulting_state.move_down()
         elif action == 'LEFT':
-            resulting_state.moveLeft()
+            resulting_state.move_left()
         elif action == 'RIGHT':
-            resulting_state.moveRight()
+            resulting_state.move_right()
         elif action == 'WRAP_LEFT':
-            resulting_state.wrapLeft()
+            resulting_state.wrap_left()
         elif action == 'WRAP_RIGHT':
-            resulting_state.wrapRight()
+            resulting_state.wrap_right()
         elif action == 'DIAG_ADJ':
-            resulting_state.diagAdjacent()
+            resulting_state.diag_adjacent()
         elif action == 'DIAG_ACROSS':
-            resulting_state.diagAcross()
+            resulting_state.diag_across()
         return resulting_state
-
-    def h0(self):
-        if self.get_puzzle()[-1] == 0:
-            return 0
-        else:
-            return 1

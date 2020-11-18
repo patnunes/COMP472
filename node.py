@@ -9,11 +9,13 @@ class Node:
     def __init__(self, state, parent=None, action=None, heuristic='h1'):
         self.id = random.randrange(2147483647)
         self.state = state
+        print("Initial puzzle state:")
+        print(self.state)
         self.parent = parent
         self.heuristic = heuristic
         self.g_fxn = 0  # Distance to start node, cost function
         self.set_h()
-        self.set_f() # Total cost, cost function + heuristic
+        self.set_f()  # Total cost, cost function + heuristic
         self.action = action
         self.depth = 0
         if parent:
@@ -23,7 +25,7 @@ class Node:
         return hash(self.id)
 
     def __eq__(self, other):
-        return isinstance(other, Node) and self.state == other.state
+        return isinstance(other, Node) and self.state == other.state and self.g_fxn == other.g_fxn
 
     def set_g(self, new_g):
         self.g_fxn = new_g
@@ -60,7 +62,7 @@ class Node:
         next_node.set_g(self.g_fxn+next_state.get_cost())
         next_node.set_h()
         next_node.set_f()
-        
+
         return next_node
 
     def solution_path(self):
@@ -72,9 +74,9 @@ class Node:
         return list(reversed(path_back))
 
     def h0(self) -> int:
-        if self.state.goal_test() is True:
-            return 1
-        return 0
+        if self.state.puzzle[self.state.bot_right] == 0:
+            return 0
+        return 1
 
     def h1(self) -> int:
         goal_1 = 0
