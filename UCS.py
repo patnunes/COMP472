@@ -1,5 +1,7 @@
 import time
 from puzzle import Puzzle
+
+
 class Node:
     """A node. Contains pointer to the parent"""
 
@@ -13,46 +15,51 @@ class Node:
         self.depth = 0
         if parent:
             self.depth = parent.depth + 1
-    
-    def __hash__(self):
-        return hash(self.state)
+
+    # def __hash__(self):
+    #     return hash(self.state)
 
     def __eq__(self, other):
-        for i in range(self.puzzle_size):
-            if (self.puzzle[i] != other.puzzle[i]):
-                return False
-        return True
-            
+        return isinstance(other, Node) and self.state == other.state
+
     def set_g(self, new_g):
         self.g_fxn = new_g
-        
+
     def set_h(self, new_h):
         self.h_fxn = new_h
-    
+
     def set_f(self, new_f):
         self.f_fxn = new_f
 
     def __repr__(self):
-        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4})'.format(self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn)
-    
+        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5})'.format(
+            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth
+        )
+
     def less_h_fxn(self, other):
         """compares h_fxn value for 2 nodes"""
         return self.h_fxn < other.h_fxn
-    
+
     def less_g_fxn(self, other):
         """compares g_fxn value for 2 nodes"""
         return self.g_fxn < other.g_fxn
-    
+
     def __lt__(self, other):
         """For use with A*, compares f_fxn between two nodes"""
         return self.f_fxn < other.f_fxn
 
     def expand(self, puzzle):
         """List all states reachable in one step from current state."""
-        return [self.child_node(puzzle, action)
-                for action in puzzle.actions(self.state)]
+        listR = [self.child_node(puzzle, action)
+                 for action in puzzle.actions(self.state)]
+        listActions = []
+        for action in puzzle.actions(self.state):
+            listActions.append(action)
+        print("LISTACT", listActions)
+        return listR
 
     def child_node(self, puzzle, action):
+        """Creates the new state based on the action given"""
         next_state = puzzle.result(action)
         next_node = Node(next_state, self, action)
         next_node.set_g(self.g_fxn+next_state.get_cost())
@@ -66,7 +73,6 @@ class Node:
             node = node.parent
         return list(reversed(path_back))
 
-    
 
 def uniform_cost(puzzle):
     start = time.time()
@@ -78,25 +84,29 @@ def uniform_cost(puzzle):
     while openlist:
         node = openlist.pop()
         if node.state.goal_test():
-            print(len(closedlist), "paths have been expanded and", len(openlist), "paths remain in the openlist")
+            print(node)
+            print("Solution achieved")
+            print(len(closedlist), "paths have been expanded and",
+                  len(openlist), "paths remain in the openlist")
             return
         closedlist.append(node.state)
         for child in node.expand(puzzle):
             print(child)
-            
+            print("Closedlist size: ", len(closedlist), ", Open list size: ",
+                  len(openlist))
             if child.state not in closedlist and child not in openlist:
-                 openlist.append(child)
+                openlist.append(child)
             elif child in openlist:
                 if node.less_g_fxn(child):
-                    del openlist[child]
+                    openlist.remove(child)
                     openlist.append(child)
-            
+
         now = time.time()
         if (now - start) > 60:
             print('Failed to excecute solution within time restriction')
             return
 
-puzzle1 = Puzzle([3, 0, 1, 4, 2, 6, 5, 7], 4,2)
+
+puzzle1 = Puzzle([0, 3, 2, 4, 6, 5, 7, 1], 4, 2)
 
 uniform_cost(puzzle1)
-
