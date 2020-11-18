@@ -1,5 +1,6 @@
 import random
 import time
+
 from puzzle import Puzzle
 
 
@@ -42,24 +43,31 @@ class Node:
             self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth, self.id, self.parent.id
         )
 
-    def expand(self):
+    def less_h_fxn(self, other):
+        """compares h_fxn value for 2 nodes"""
+        return self.h_fxn < other.h_fxn
+
+    def less_g_fxn(self, other):
+        """compares g_fxn value for 2 nodes"""
+        return self.g_fxn < other.g_fxn
+
+    def __lt__(self, other):
+        """For use with A*, compares f_fxn between two nodes"""
+        return self.f_fxn < other.f_fxn
+
+    def expand(self, puzzle):
         """List all states reachable in one step from current state."""
-        children = set()
-        action_space = self.state.actions()
-        print("LISTACT", action_space)
-        for action in action_space:
-            children.add(self.child_node(action))
+        listR = [self.child_node(puzzle, action)
+                 for action in puzzle.actions(self.state)]
+        listActions = []
+        for action in puzzle.actions(self.state):
+            listActions.append(action)
+        print("LISTACT", listActions)
+        return listR
 
-        if(len(action_space) != len(children)):
-            print('disaster')
-
-        return children
-
-    def child_node(self, action):
+    def child_node(self, puzzle, action):
         """Creates the new state based on the action given"""
-        next_state = self.state.result(action)
-        print('next_state')
-        print(next_state)
+        next_state = puzzle.result(action)
         next_node = Node(next_state, self, action)
         next_node.set_g(self.g_fxn+next_state.get_cost())
         next_node.set_f()
@@ -75,16 +83,15 @@ class Node:
         return list(reversed(path_back))
 
 
-def uniform_cost(puzzle):
+def a_star(puzzle):
     start = time.time()
     node = Node(puzzle)
     openlist = []
     openlist.append(node)
-    closedlist = []
-    visited_nodes = 0
+    closedlist = set()
 
     while openlist:
-        openlist.sort(key=lambda x: x.g_fxn)
+        openlist.sort(key=lambda x: x.f_fxn)
         node = openlist.pop()
         if node.state.goal_test():
             print(node)
@@ -92,25 +99,17 @@ def uniform_cost(puzzle):
             print(len(closedlist), "paths have been expanded and",
                   len(openlist), "paths remain in the openlist")
             return
-        closedlist.append(node)
-        for child in node.expand():
-            visited_nodes += 1
-            print('visited nodes', visited_nodes)
+        closedlist.add(node)
+        for child in node.expand(puzzle):
             print(child)
             print("Closedlist size: ", len(closedlist), ", Open list size: ",
                   len(openlist))
-            if child in closedlist:
-                print(node.id, "closed: ", child.id)
-            if child in openlist:
-                print(node.id, "open: ", child.id)
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
-                print(node.id, "appending: ", child.id)
-            elif child in openlist:
-                if child.g_fxn > node.g_fxn:
-                    openlist.remove(child)
-                    openlist.append(node)
-                    print('remove', 'append')
+            # elif child in openlist:
+            #     if node.less_f_fxn(child):
+            #         openlist.remove(child)
+            #         openlist.append(node)
 
         now = time.time()
         if (now - start) > 60:
@@ -122,6 +121,6 @@ puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle3 = Puzzle([1, 3, 2, 4, 6, 5, 7, 1], 4, 2)
 
-uniform_cost(puzzle1)
-# print(puzzle2 == puzzle1)
-# print(puzzle3 == puzzle1)
+a_star(puzzle1)
+print(puzzle2 == puzzle1)
+print(puzzle3 == puzzle1)
