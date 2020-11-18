@@ -13,7 +13,7 @@ class Node:
         self.heuristic = heuristic
         self.g_fxn = 0  # Distance to start node, cost function
         self.set_h()
-        self.f_fxn = 0  # Total cost, cost function + heuristic
+        self.set_f() # Total cost, cost function + heuristic
         self.action = action
         self.depth = 0
         if parent:
@@ -85,7 +85,7 @@ class Node:
             if self.state.goal_state_2[i] != self.state.puzzle[i]:
                 goal_2 += 1
 
-        return max(goal_1, goal_2)
+        return min(goal_1, goal_2)
 
     def h2(self) -> int:
         grid1 = self.state.puzzle
@@ -98,4 +98,4 @@ class Node:
         sub = np.subtract(grid1, grid3)
         diff = np.abs(sub)
         return_val_2 = np.sum(diff.flatten())
-        return max(return_val_1, return_val_2)
+        return min(return_val_1, return_val_2)

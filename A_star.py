@@ -6,7 +6,7 @@ from puzzle import Puzzle
 
 def a_star(puzzle):
     start = time.time()
-    node = Node(puzzle)
+    node = Node(puzzle, heuristic="h2")
     openlist = []
     openlist.append(node)
     closedlist = set()
@@ -59,4 +59,4 @@ puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle2 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
 puzzle3 = Puzzle([1, 0, 3, 6, 5, 2, 7, 4], 4, 2)
 
-a_star(puzzle2)
+a_star(puzzle1)
