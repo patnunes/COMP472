@@ -4,7 +4,7 @@ from node import Node
 from puzzle import Puzzle
 
 
-def a_star(puzzle, heuristic='h2'):
+def a_star(puzzle, heuristic='h2', time_restriction=60):
     start = time.time()
     node = Node(puzzle, heuristic=heuristic)
     open_list = []
@@ -15,8 +15,8 @@ def a_star(puzzle, heuristic='h2'):
         open_list.sort(key=lambda x: x.f_fxn, reverse=True)
         node = open_list.pop()
         closed_list.add(node)
+        print(node)
         if node.state.goal_test():
-            print(node)
             print("Solution achieved")
             print(len(closed_list), "paths have been expanded and", len(open_list),
                   "paths remain in the open_list.", "node depth", node.depth)
@@ -24,11 +24,8 @@ def a_star(puzzle, heuristic='h2'):
 
         for child in node.expand():
             continue_loop = False
-            print(child)
-            print("closed_list size: ", len(closed_list), ", Open list size: ",
-                  len(open_list))
             for closed_node in closed_list:
-                if child.state == closed_node.state and closed_node.g_fxn < child.g_fxn:
+                if child.state == closed_node.state and closed_node.f_fxn < child.f_fxn:
                     continue_loop = True
                     break
 
@@ -36,7 +33,7 @@ def a_star(puzzle, heuristic='h2'):
                 continue
 
             for open_node in open_list:
-                if open_node.state == child.state and child.g_fxn > open_node.g_fxn:
+                if open_node.state == child.state and child.f_fxn > open_node.f_fxn:
                     continue_loop = True
                     break
 
@@ -46,7 +43,7 @@ def a_star(puzzle, heuristic='h2'):
             open_list.append(child)
 
         now = time.time()
-        if (now - start) > 60:
+        if (now - start) > time_restriction:
             print('Failed to excecute solution within time restriction')
             return
 

@@ -7,10 +7,8 @@ class Node:
     """A node. Contains pointer to the parent"""
 
     def __init__(self, state, parent=None, action=None, heuristic='h1'):
-        self.id = random.randrange(2147483647)
+        self.identifier = random.randrange(2147483647)
         self.state = state
-        print("Initial puzzle state:")
-        print(self.state)
         self.parent = parent
         self.heuristic = heuristic
         self.g_fxn = 0  # Distance to start node, cost function
@@ -20,9 +18,11 @@ class Node:
         self.depth = 0
         if parent:
             self.depth = parent.depth + 1
+        else:
+            print(self)
 
     def __hash__(self):
-        return hash(self.id)
+        return hash(self.identifier)
 
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state and self.g_fxn == other.g_fxn
@@ -39,12 +39,27 @@ class Node:
             self.h_fxn = self.h0()
 
     def set_f(self):
-        self.f_fxn = 0.01*self.g_fxn + 0.99*self.h_fxn
+        if self.g_fxn == 0:
+            g_fxn = 1
+        else:
+            g_fxn = self.g_fxn
+
+        if self.h_fxn == 0:
+            h_fxn = 1
+        else:
+            h_fxn = self.h_fxn
+
+        self.f_fxn = 2/(1/g_fxn + 1/h_fxn)
 
     def __repr__(self):
-        return '{0}(action:{1}, g(node)={2}, h(node)={3}, f(node)={4}, depth={5}, id={6})'.format(
-            self.state, self.action, self.g_fxn, self.h_fxn, self.f_fxn, self.depth, self.id
+
+        solution_path = '{0} {1} {2}'.format(
+            self.depth, self.g_fxn, self.state
         )
+        search_path = '{0} {1} {2} {3}'.format(
+            self.f_fxn, self.g_fxn, self.h_fxn, self.state
+        )
+        return solution_path + '\n' + search_path
 
     def expand(self):
         """List all states reachable in one step from current state."""
@@ -74,11 +89,13 @@ class Node:
         return list(reversed(path_back))
 
     def h0(self) -> int:
+        """Zeroth Heuristic; given"""
         if self.state.puzzle[self.state.bot_right] == 0:
             return 0
         return 1
 
     def h1(self) -> int:
+        """First Heuristic; calculates number of miscount from every goal state"""
         goal_1 = 0
         goal_2 = 0
         for i in range(0, self.state.puzzle_size):
@@ -90,6 +107,7 @@ class Node:
         return goal_1
 
     def h2(self) -> int:
+        """Second Heuristic; calculates distance from each goal state"""
         grid1 = self.state.puzzle
         grid2 = self.state.goal_state_1
         grid3 = self.state.goal_state_2
