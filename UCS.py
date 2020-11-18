@@ -6,40 +6,28 @@ from puzzle import Puzzle
 
 def uniform_cost(puzzle):
     node = Node(puzzle)
-    openlist = []
-    openlist.append(node)
-    closedlist = []
+    open_list = []
+    open_list.append(node)
+    closed_list = []
     visited_nodes = 0
 
-    while openlist:
-        openlist.sort(key=lambda x: x.g_fxn, reverse=True)
-        node = openlist.pop()
+    while open_list:
+        open_list.sort(key=lambda x: x.g_fxn, reverse=True)
+        node = open_list.pop()
         if node.state.goal_test():
             print(node.solution_path())
             print(node.g_fxn)
             print(node)
             print("Solution achieved")
-            print(len(closedlist), "paths have been expanded and",
-                  len(openlist), "paths remain in the openlist")
+            print(len(closed_list), "paths have been expanded and",
+                  len(open_list), "paths remain in the open_list")
             return node, node.g_fxn
-        closedlist.append(node)
+        closed_list.append(node)
         for child in node.expand():
             visited_nodes += 1
-            if child not in closedlist and child not in openlist:
-                openlist.append(child)
-            elif child in openlist:
+            if child not in closed_list and child not in open_list:
+                open_list.append(child)
+            elif child in open_list:
                 if child.g_fxn < node.g_fxn:
-                    openlist.remove(child)
-                    openlist.append(node)
-
-        now = time.time()
-        if (now - start) > 60:
-            print('Failed to excecute solution within time restriction')
-            return
-
-
-puzzle1 = Puzzle([1, 2, 0, 3, 5, 6, 7, 4], 4, 2)
-puzzle2 = Puzzle([6, 3, 4, 7, 1, 2, 5, 0], 4, 2)
-puzzle3 = Puzzle([1, 0, 3, 6, 5, 2, 7, 4], 4, 2)
-
-uniform_cost(puzzle3)
+                    open_list.remove(child)
+                    open_list.append(child)
