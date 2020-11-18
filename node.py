@@ -1,6 +1,9 @@
 import random
 from puzzle import Puzzle
 
+TIME_RESTRICTION = 60
+
+
 class Node:
     """A node. Contains pointer to the parent"""
 
@@ -44,20 +47,14 @@ class Node:
         """List all states reachable in one step from current state."""
         children = set()
         action_space = self.state.actions()
-        print("LISTACT", action_space)
         for action in action_space:
             children.add(self.child_node(action))
-
-        if(len(action_space) != len(children)):
-            print('disaster')
 
         return children
 
     def child_node(self, action):
         """Creates the new state based on the action given"""
         next_state = self.state.result(action)
-        print('next_state')
-        print(next_state)
         next_node = Node(next_state, self, action)
         next_node.set_g(self.g_fxn+next_state.get_cost())
         next_node.set_f()

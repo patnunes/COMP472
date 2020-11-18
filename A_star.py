@@ -27,10 +27,10 @@ def a_star(puzzle):
                   len(openlist))
             if child not in closedlist and child not in openlist:
                 openlist.append(child)
-            # elif child in openlist:
-            #     if node.less_f_fxn(child):
-            #         openlist.remove(child)
-            #         openlist.append(node)
+            elif child in openlist:
+                if node.less_f_fxn(child):
+                    openlist.remove(child)
+                    openlist.append(child)
 
         now = time.time()
         if (now - start) > 60:
