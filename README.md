@@ -16,3 +16,4 @@ Repo for COMP472 assignments/projects
 
 1. cd to the directry where this repo was cloned in and type
 ```python main.py```
+```python analysis```
