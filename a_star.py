@@ -3,7 +3,7 @@ from node import Node
 from puzzle import Puzzle
 
 
-def a_star(puzzle, heuristic='h2', time_restriction=60):
+def a_star(puzzle, heuristic='h2', time_restriction=60, restrict_time = True):
     start = time.time()
     node = Node(puzzle, heuristic=heuristic)
     open_list = []
@@ -43,7 +43,7 @@ def a_star(puzzle, heuristic='h2', time_restriction=60):
             open_list.append(child)
 
         now = time.time()
-        if (now - start) > time_restriction:
+        if ((now - start) > time_restriction) and restrict_time == True:
             print('Failed to excecute solution within time restriction')
             return node, node.g_fxn, closed_list, (now - start)
 

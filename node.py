@@ -84,7 +84,7 @@ class Node:
         """Creates the new state based on the action given"""
         next_state = self.state.result(action)
         next_node = Node(next_state, self, action, heuristic=self.heuristic)
-        next_node.set_g(self.g_fxn+next_state.get_cost())
+        next_node.set_g(next_state.get_cost())
         next_node.set_h()
         next_node.set_f()
         next_node.set_moved_index(next_state.get_moved_index())

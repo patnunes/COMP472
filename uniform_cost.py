@@ -4,7 +4,7 @@ from node import Node
 from puzzle import Puzzle
 
 
-def uniform_cost(puzzle, time_restriction=60):
+def uniform_cost(puzzle, time_restriction=60, restrict_time = True):
     node = Node(puzzle)
     open_list = []
     open_list.append(node)
@@ -47,6 +47,6 @@ def uniform_cost(puzzle, time_restriction=60):
             open_list.append(child)
 
         now = time.time()
-        if (now - start) > time_restriction:
+        if ((now - start) > time_restriction) and restrict_time == True:
             print('Failed to excecute solution within time restriction')
             return node, node.g_fxn, closed_list, (now - start)
