@@ -1,10 +1,10 @@
-Total length of search: 9693
-Total length of solution: 2063
+Total length of search: 7698
+Total length of solution: 1983
 Total number of no solution: 0
-Total cost: 638
-Total execution time: 53.48732852935791
-Average length of search: 1938.6
-Average length of solution: 412.6
+Total cost: 201
+Total execution time: 16.49891448020935
+Average length of search: 1539.6
+Average length of solution: 396.6
 Average number of no solution: 0.0
-Average cost: 127.6
-Average execution time: 10.697465705871583
+Average cost: 40.2
+Average execution time: 3.29978289604187
