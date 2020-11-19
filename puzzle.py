@@ -10,6 +10,7 @@ class Puzzle:
         self.rows = rows
         self.puzzle_size = (len(self.puzzle))
         self.cost = 0
+        self.moved_index = 0
 
         self.top_left = 0
         self.top_right = self.columns - 1
@@ -35,6 +36,12 @@ class Puzzle:
 
     def get_puzzle(self):
         return self.puzzle
+
+    def get_moved_index(self):
+        return self.moved_index
+
+    def set_moved_index(self, index):
+        self.moved_index = self.puzzle[index]
 
     def get_cost(self):
         return self.cost
@@ -62,6 +69,7 @@ class Puzzle:
         if (blank_index % self.columns == self.columns-1):
             return
         else:
+            self.set_moved_index(blank_index+1)
             self.swap_positions(blank_index, blank_index+1)
             self.cost += 1
 
@@ -70,6 +78,7 @@ class Puzzle:
         if (blank_index % self.columns == 0):
             return
         else:
+            self.set_moved_index(blank_index-1)
             self.swap_positions(blank_index, blank_index-1)
             self.cost += 1
 
@@ -78,6 +87,7 @@ class Puzzle:
         if (blank_index >= self.puzzle_size - self.columns):
             return
         else:
+            self.set_moved_index(blank_index+self.columns)
             self.swap_positions(blank_index, blank_index+self.columns)
             self.cost += 1
 
@@ -86,43 +96,52 @@ class Puzzle:
         if (blank_index < self.columns):
             return
         else:
+            self.set_moved_index(blank_index-self.columns)
             self.swap_positions(blank_index, blank_index-self.columns)
             self.cost += 1
 
     def wrap_right(self):
         blank_index = self.find_blank()
         if (blank_index == self.bot_right):
+            self.set_moved_index(self.bot_left)
             self.swap_positions(blank_index, self.bot_left)
             self.cost += 2
 
         elif (blank_index == self.top_right):
+            self.set_moved_index(self.top_left)
             self.swap_positions(blank_index, self.top_left)
             self.cost += 2
 
     def wrap_left(self):
         blank_index = self.find_blank()
         if (blank_index == self.bot_left):
+            self.set_moved_index(self.bot_right)
             self.swap_positions(blank_index, self.bot_right)
             self.cost += 2
         elif (blank_index == self.top_left):
+            self.set_moved_index(self.top_right)
             self.swap_positions(blank_index, self.top_right)
             self.cost += 2
 
     def diag_across(self):
         blank_index = self.find_blank()
         if (blank_index == self.top_left):
+            self.set_moved_index(self.bot_right)
             self.swap_positions(blank_index, self.bot_right)
             self.cost += 3
             return
         elif (blank_index == self.bot_left):
+            self.set_moved_index(self.top_right)
             self.swap_positions(blank_index, self.top_right)
             self.cost += 3
             return
         elif (blank_index == self.top_right):
+            self.set_moved_index(self.bot_left)
             self.swap_positions(blank_index, self.bot_left)
             self.cost += 3
             return
         elif (blank_index == self.bot_right):
+            self.set_moved_index(self.top_left)
             self.swap_positions(blank_index, self.top_left)
             self.cost += 3
             return
@@ -130,18 +149,22 @@ class Puzzle:
     def diag_adjacent(self):
         blank_index = self.find_blank()
         if (blank_index == self.top_left):
+            self.set_moved_index(self.top_left+self.columns+1)
             self.swap_positions(blank_index, self.top_left+self.columns+1)
             self.cost += 3
             return
         elif (blank_index == self.bot_left):
+            self.set_moved_index(self.bot_left-self.columns+1)
             self.swap_positions(blank_index, self.bot_left-self.columns+1)
             self.cost += 3
             return
         elif (blank_index == self.top_right):
+            self.set_moved_index(self.top_right+self.columns-1)
             self.swap_positions(blank_index, self.top_right+self.columns-1)
             self.cost += 3
             return
         elif (blank_index == self.bot_right):
+            self.set_moved_index(self.bot_right-self.columns-1)
             self.swap_positions(blank_index, self.bot_right-self.columns-1)
             self.cost += 3
             return

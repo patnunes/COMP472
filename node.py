@@ -15,6 +15,8 @@ class Node:
         self.set_h()
         self.set_f()  # Total cost, cost function + heuristic
         self.action = action
+        self.moved_index = 0
+        self.single_action_cost = 0
         self.depth = 0
         if parent:
             self.depth = parent.depth + 1
@@ -41,7 +43,7 @@ class Node:
             self.h_fxn = 0
 
     def set_f(self):
-    
+
         if self.heuristic != None:
             if self.g_fxn == 0:
                 g_fxn = 1
@@ -52,9 +54,15 @@ class Node:
                 h_fxn = 1
             else:
                 h_fxn = self.h_fxn
-            self.f_fxn = 2/(1/g_fxn + 1/h_fxn)           
+            self.f_fxn = 2/(1/g_fxn + 1/h_fxn)
         else:
             self.f_fxn = 0
+
+    def set_moved_index(self, index):
+        self.moved_index = index
+
+    def set_single_action_cost(self, cost):
+        self.single_action_cost = cost
 
     def __repr__(self):
 
@@ -79,7 +87,9 @@ class Node:
         next_node.set_g(self.g_fxn+next_state.get_cost())
         next_node.set_h()
         next_node.set_f()
-    
+        next_node.set_moved_index(next_state.get_moved_index())
+        next_node.set_single_action_cost(next_state.get_cost())
+
         return next_node
 
     def solution_path(self):
@@ -106,7 +116,7 @@ class Node:
             if self.state.goal_state_2[i] != self.state.puzzle[i]:
                 goal_2 += 1
 
-        return min(goal_1,goal_2)
+        return min(goal_1, goal_2)
 
     def h2(self) -> int:
         """Second Heuristic; calculates distance from each goal state"""

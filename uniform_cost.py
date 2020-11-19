@@ -10,7 +10,6 @@ def uniform_cost(puzzle, time_restriction=60):
     open_list.append(node)
     closed_list = []
     start = time.time()
-    #visited_nodes = 0
 
     while open_list:
         open_list.sort(key=lambda x: x.g_fxn, reverse=True)
@@ -23,7 +22,7 @@ def uniform_cost(puzzle, time_restriction=60):
             print("Solution achieved")
             print(len(closed_list), "paths have been expanded and",
                   len(open_list), "paths remain in the open_list")
-            
+
             return node, node.g_fxn, closed_list, (now - start)
         closed_list.append(node)
 
@@ -46,9 +45,8 @@ def uniform_cost(puzzle, time_restriction=60):
                 continue
 
             open_list.append(child)
-            
+
         now = time.time()
         if (now - start) > time_restriction:
             print('Failed to excecute solution within time restriction')
             return node, node.g_fxn, closed_list, (now - start)
-
