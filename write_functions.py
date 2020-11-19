@@ -1,7 +1,7 @@
 from node import Node
 from uniform_cost import uniform_cost
 from greedys_best_first import best_first_search
-from A_star import a_star
+from a_star import a_star
 from puzzle import Puzzle
 
 def write_solution(ctr,output_directory, execution_time, goal_node, total_cost, algo, heuristic=None):
@@ -18,7 +18,8 @@ def write_solution(ctr,output_directory, execution_time, goal_node, total_cost, 
             solution_path = goal_node.solution_path()
             output_lines = []
             for node in solution_path:
-                output_lines.append(str(node.state).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip())
+                #output_lines.extend([node.moved_index, node.single_action_cost])
+                output_lines.append((str(node.moved_index)+' '+str(node.single_action_cost)+' '+str(node.state) ).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip())
             output_lines.append('%d %f' % (total_cost, execution_time))
             with open(output_directory + '/' + file_name, 'w') as file:
                 file.writelines("%s\n" % i for i in output_lines)
