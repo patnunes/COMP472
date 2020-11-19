@@ -23,7 +23,7 @@ def analysis():
     #######        UCS          #######
     ###################################
 
-    write_analysis(output_directory, fifty_puzzle_file, 'ucs', cols, rows, puzzle_qty)
+    #write_analysis(output_directory, fifty_puzzle_file, 'ucs', cols, rows, puzzle_qty)
 
     ###################################
     #######        GBFS         #######
@@ -40,3 +40,4 @@ def analysis():
     #write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h0')
     write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h1')
     write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h2')
+analysis()
