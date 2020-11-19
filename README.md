@@ -14,4 +14,5 @@ Repo for COMP472 assignments/projects
 # How to run the code
 
 1. cd into project folder
-2. >> python3 main.py
+2. In the terminal:
+    >> python main.py
