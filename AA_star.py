@@ -1,4 +1,3 @@
-import random
 import time
 from node import Node
 from puzzle import Puzzle
@@ -42,7 +41,7 @@ def a_star(puzzle, heuristic='h2', time_restriction=60):
                 continue
 
             open_list.append(child)
-        
+
         now = time.time()
         if (now - start) > time_restriction:
             print('Failed to excecute solution within time restriction')
