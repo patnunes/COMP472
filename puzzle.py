@@ -124,7 +124,7 @@ class Puzzle:
             self.cost += 2
 
     def wrap_down(self):
-        
+
         blank_index = self.find_blank()
         if (blank_index == self.bot_left):
             self.set_moved_index(self.top_left)
@@ -206,26 +206,32 @@ class Puzzle:
         blank_index = self.find_blank()
         col_number = blank_index % self.columns
 
-        
         if (self.is_corner(blank_index)):
             if self.rows > 2:
                 if blank_index == self.top_left:
-                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT', 'WRAP_UP'])
+                    possible_actions.extend(
+                        ['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT', 'WRAP_UP'])
                 elif blank_index == self.top_right:
-                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT', 'WRAP_UP'])
+                    possible_actions.extend(
+                        ['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT', 'WRAP_UP'])
                 elif blank_index == self.bot_left:
-                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT', 'WRAP_DOWN'])
+                    possible_actions.extend(
+                        ['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT', 'WRAP_DOWN'])
                 elif blank_index == self.bot_right:
-                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT', 'WRAP_DOWN'])
-            else:   
+                    possible_actions.extend(
+                        ['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT', 'WRAP_DOWN'])
+            else:
                 if blank_index == self.top_left:
                     possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT'])
                 elif blank_index == self.top_right:
-                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT'])
+                    possible_actions.extend(
+                        ['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT'])
                 elif blank_index == self.bot_left:
-                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT'])
+                    possible_actions.extend(
+                        ['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT'])
                 elif blank_index == self.bot_right:
-                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT'])
+                    possible_actions.extend(
+                        ['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT'])
         else:
             if col_number == 0:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT'])
