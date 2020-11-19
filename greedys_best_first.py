@@ -37,7 +37,7 @@ def best_first_search(puzzle, heuristic='h1', time_restriction=60):
         now = time.time()
         if (now - start) > time_restriction:
             print('Failed to excecute solution within time restriction')
-            return
+            return node, node.g_fxn, closed_list, (now - start)
 
 
 puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)

@@ -58,13 +58,14 @@ class Node:
 
     def __repr__(self):
 
-        solution_path = '{0} {1} {2}'.format(
-            self.depth, self.g_fxn, self.state
-        )
+        # solution_path = '{0} {1} {2}'.format(
+        #     self.depth, self.g_fxn, self.state
+        # )
         search_path = '{0} {1} {2} {3}'.format(
             self.f_fxn, self.g_fxn, self.h_fxn, self.state
         )
-        return solution_path + '\n' + search_path
+        # return solution_path + '\n' + 
+        return search_path
 
     def expand(self):
         """List all states reachable in one step from current state."""
