@@ -4,7 +4,7 @@ from node import Node
 from puzzle import Puzzle
 
 
-def best_first_search(puzzle, heuristic='h1', time_restriction=60):
+def best_first_search(puzzle, heuristic='h1', time_restriction=60, restrict_time = True):
     start = time.time()
     node = Node(puzzle, heuristic=heuristic)
     open_list = []
@@ -35,7 +35,7 @@ def best_first_search(puzzle, heuristic='h1', time_restriction=60):
                 open_list.append(child)
 
         now = time.time()
-        if (now - start) > time_restriction:
+        if ((now - start) > time_restriction) and restrict_time == True:
             print('Failed to excecute solution within time restriction')
             return node, node.g_fxn, closed_list, (now - start)
 
