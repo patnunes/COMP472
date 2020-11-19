@@ -29,6 +29,9 @@ class Node:
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state and self.g_fxn == other.g_fxn
 
+    def get_g(self):
+        return self.g_fxn
+
     def set_g(self, new_g):
         self.g_fxn = new_g
 
@@ -88,7 +91,7 @@ class Node:
         next_node.set_h()
         next_node.set_f()
         next_node.set_moved_index(next_state.get_moved_index())
-        next_node.set_single_action_cost(next_state.get_cost())
+        next_node.set_single_action_cost(next_state.get_cost()-self.state.get_cost())
 
         return next_node
 
