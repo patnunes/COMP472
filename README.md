@@ -7,9 +7,9 @@ Repo for COMP472 assignments/projects
 
 | Names                     | Github               	| Contribution 				|
 | -------------             | -------------      	| -----------  				|
-| Louis-Benjamin Durocher (40045719)   | LouisBenjamin   		|Base-MLP, Best-MLP			|
-| Patricia Nunes (40006956) | patnunes   		|Base-DT, Best-DT			|
-| Alan Giamatti (40041674)   | agiamatti   		|GNB, Perceptron		|
+| Louis-Benjamin Durocher (40045719)   | LouisBenjamin   		|All Contributed |
+| Patricia Nunes (40006956) | patnunes   		|All Contributed	|
+| Alan Giamatti (40041674)   | agiamatti   		|All Contributed		|
 
 # How to run models
 
