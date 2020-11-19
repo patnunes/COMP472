@@ -28,6 +28,8 @@ def main():
             write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'ucs')
 
             goal_node, total_cost, closedlist, execution_time = best_first_search(puzzle, heuristic='h1')
+            # write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'gbfs', 'h0' )
+            # write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'gbfs', 'h0')
             write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'gbfs', 'h1' )
             write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'gbfs', 'h1')
             goal_node, total_cost, closedlist, execution_time = best_first_search(puzzle, heuristic='h2')
@@ -35,6 +37,8 @@ def main():
             write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'gbfs', 'h2')
 
             goal_node, total_cost, closedlist, execution_time = a_star(puzzle, heuristic='h1')
+            # write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'astar', 'h0' )
+            # write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'astar', 'h0')
             write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'astar', 'h1' )
             write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'astar', 'h1')
             goal_node, total_cost, closedlist, execution_time = a_star(puzzle, heuristic='h2')
