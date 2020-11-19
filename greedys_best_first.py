@@ -14,6 +14,7 @@ def best_first_search(puzzle, heuristic='h1', time_restriction=60, restrict_time
     while open_list:
         open_list.sort(key=lambda x: x.h_fxn, reverse=True)
         node = open_list.pop()
+        print(node)
         closed_list.add(node)
         if node.state.goal_test():
             now = time.time()

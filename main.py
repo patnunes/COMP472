@@ -23,9 +23,9 @@ def main():
             puzzle = Puzzle(temp_puzzle, cols, rows)
 
             
-            # goal_node, total_cost, closedlist, execution_time = uniform_cost(puzzle)
-            # write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'ucs')
-            # write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'ucs')
+            goal_node, total_cost, closedlist, execution_time = uniform_cost(puzzle)
+            write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'ucs')
+            write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'ucs')
 
             goal_node, total_cost, closedlist, execution_time = best_first_search(puzzle, heuristic='h1')
             # write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'gbfs', 'h0' )
