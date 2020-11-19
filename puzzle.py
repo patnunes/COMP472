@@ -123,6 +123,29 @@ class Puzzle:
             self.swap_positions(blank_index, self.top_right)
             self.cost += 2
 
+    def wrap_down(self):
+        
+        blank_index = self.find_blank()
+        if (blank_index == self.bot_left):
+            self.set_moved_index(self.top_left)
+            self.swap_positions(blank_index, self.top_left)
+            self.cost += 2
+        elif (blank_index == self.bot_right):
+            self.set_moved_index(self.top_right)
+            self.swap_positions(blank_index, self.top_right)
+            self.cost += 2
+
+    def wrap_up(self):
+        blank_index = self.find_blank()
+        if (blank_index == self.top_left):
+            self.set_moved_index(self.bot_left)
+            self.swap_positions(blank_index, self.bot_left)
+            self.cost += 2
+        elif (blank_index == self.top_right):
+            self.set_moved_index(self.bot_right)
+            self.swap_positions(blank_index, self.bot_right)
+            self.cost += 2
+
     def diag_across(self):
         blank_index = self.find_blank()
         if (blank_index == self.top_left):
@@ -182,15 +205,27 @@ class Puzzle:
 
         blank_index = self.find_blank()
         col_number = blank_index % self.columns
+
+        
         if (self.is_corner(blank_index)):
-            if blank_index == self.top_left:
-                possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT'])
-            elif blank_index == self.top_right:
-                possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT'])
-            elif blank_index == self.bot_left:
-                possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT'])
-            elif blank_index == self.bot_right:
-                possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT'])
+            if self.rows > 2:
+                if blank_index == self.top_left:
+                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT', 'WRAP_UP'])
+                elif blank_index == self.top_right:
+                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT', 'WRAP_UP'])
+                elif blank_index == self.bot_left:
+                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT', 'WRAP_DOWN'])
+                elif blank_index == self.bot_right:
+                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT', 'WRAP_DOWN'])
+            else:   
+                if blank_index == self.top_left:
+                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'LEFT'])
+                elif blank_index == self.top_right:
+                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'UP', 'RIGHT'])
+                elif blank_index == self.bot_left:
+                    possible_actions.extend(['WRAP_LEFT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'LEFT'])
+                elif blank_index == self.bot_right:
+                    possible_actions.extend(['WRAP_RIGHT', 'DIAG_ADJ', 'DIAG_ACROSS', 'DOWN', 'RIGHT'])
         else:
             if col_number == 0:
                 possible_actions.extend(['UP', 'DOWN', 'LEFT'])
@@ -218,8 +253,13 @@ class Puzzle:
             resulting_state.wrap_left()
         elif action == 'WRAP_RIGHT':
             resulting_state.wrap_right()
+        elif action == 'WRAP_UP':
+            resulting_state.wrap_up()
+        elif action == 'WRAP_DOWN':
+            resulting_state.wrap_down()
         elif action == 'DIAG_ADJ':
             resulting_state.diag_adjacent()
         elif action == 'DIAG_ACROSS':
             resulting_state.diag_across()
+
         return resulting_state

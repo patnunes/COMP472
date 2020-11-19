@@ -7,37 +7,70 @@ def analysis():
 
     puzzle_qty = 50
     fifty_puzzle_file = './a2-dataset/puzzles.txt'
-    output_directory = './output'
+    scaled_puzzle_file1 = './a2-dataset/scaled_puzzles1.txt'
+    scaled_puzzle_file2 = './a2-dataset/scaled_puzzles2.txt'
+    scaled_puzzle_file3 = './a2-dataset/scaled_puzzles3.txt'
+    
+    output_directory = './analysis_output'
 
-    with open(fifty_puzzle_file, 'w')as f:
+    with open(fifty_puzzle_file, 'w') as f:
         template_puzzle = [1,2,3,4,5,6,7,0]
         for x in range(puzzle_qty):
             random.shuffle(template_puzzle)
             f.write(str(template_puzzle).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip() + '\n')  
     f.close()
 
-    cols = 4
-    rows = 2
+    with open(scaled_puzzle_file1, 'w') as f:
+        template_puzzle = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,0]
+        for x in range(1):
+            random.shuffle(template_puzzle)
+            f.write(str(template_puzzle).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip() + '\n')  
+    f.close()
+
+    with open(scaled_puzzle_file2, 'w') as f:
+        template_puzzle = [1,2,3,4,5,6,7,8,0]
+        for x in range(3):
+            random.shuffle(template_puzzle)
+            f.write(str(template_puzzle).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip() + '\n')  
+    f.close()
+
+    with open(scaled_puzzle_file3, 'w') as f:
+        template_puzzle = [1,2,3,4,5,6,7,8,9,10,11,0]
+        for x in range(3):
+            random.shuffle(template_puzzle)
+            f.write(str(template_puzzle).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip() + '\n')  
+    f.close()
+
+
+
+    
 
     ###################################
     #######        UCS          #######
     ###################################
-
-    #write_analysis(output_directory, fifty_puzzle_file, 'ucs', cols, rows, puzzle_qty)
+    
+    write_analysis(output_directory, fifty_puzzle_file, 'ucs', 4, 2, puzzle_qty)
 
     ###################################
     #######        GBFS         #######
     ###################################
 
-    #write_analysis(output_directory, fifty_puzzle_file, 'gbfs', cols, rows, puzzle_qty, heuristic = 'h0')
-    write_analysis(output_directory, fifty_puzzle_file, 'gbfs', cols, rows, puzzle_qty, heuristic = 'h1')
-    write_analysis(output_directory, fifty_puzzle_file, 'gbfs', cols, rows, puzzle_qty, heuristic = 'h2')
+    write_analysis(output_directory, fifty_puzzle_file, 'gbfs', 4, 2, puzzle_qty, heuristic = 'h0')
+    write_analysis(output_directory, fifty_puzzle_file, 'gbfs', 3, 3, puzzle_qty, heuristic = 'h1')
+    write_analysis(output_directory, fifty_puzzle_file, 'gbfs', 4, 3, puzzle_qty, heuristic = 'h2')
+
+    ##Scaled Up GBFS
+
+    write_analysis(output_directory, scaled_puzzle_file1, 'gbfs', 5, 5, 1, heuristic = 'h1', restrict_time=False)
+    write_analysis(output_directory, scaled_puzzle_file2, 'gbfs', 3, 3, 3, heuristic = 'h1', restrict_time=False, ctr = '3x3')
+    write_analysis(output_directory, scaled_puzzle_file3, 'gbfs', 4, 3, 3, heuristic = 'h1', restrict_time=False, ctr = '3x4')
 
     ###################################
     #######        A*           #######
     ###################################
 
-    #write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h0')
-    write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h1')
-    write_analysis(output_directory, fifty_puzzle_file, 'astar', cols, rows, puzzle_qty, heuristic = 'h2')
+    write_analysis(output_directory, fifty_puzzle_file, 'astar', 4, 2, puzzle_qty, heuristic = 'h0')
+    write_analysis(output_directory, fifty_puzzle_file, 'astar', 4, 2, puzzle_qty, heuristic = 'h1')
+    write_analysis(output_directory, fifty_puzzle_file, 'astar', 4, 2, puzzle_qty, heuristic = 'h2')
+
 analysis()
