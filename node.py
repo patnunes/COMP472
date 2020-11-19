@@ -6,7 +6,7 @@ from puzzle import Puzzle
 class Node:
     """A node. Contains pointer to the parent"""
 
-    def __init__(self, state, parent=None, action=None, heuristic='h1'):
+    def __init__(self, state, parent=None, action=None, heuristic=None):
         self.identifier = random.randrange(2147483647)
         self.state = state
         self.parent = parent
@@ -35,21 +35,26 @@ class Node:
             self.h_fxn = self.h2()
         elif self.heuristic == 'h1':
             self.h_fxn = self.h1()
-        else:
+        elif self.heuristic == 'h0':
             self.h_fxn = self.h0()
+        else:
+            self.h_fxn = 0
 
     def set_f(self):
-        if self.g_fxn == 0:
-            g_fxn = 1
-        else:
-            g_fxn = self.g_fxn
+    
+        if self.heuristic != None:
+            if self.g_fxn == 0:
+                g_fxn = 1
+            else:
+                g_fxn = self.g_fxn
 
-        if self.h_fxn == 0:
-            h_fxn = 1
+            if self.h_fxn == 0:
+                h_fxn = 1
+            else:
+                h_fxn = self.h_fxn
+            self.f_fxn = 2/(1/g_fxn + 1/h_fxn)           
         else:
-            h_fxn = self.h_fxn
-
-        self.f_fxn = 2/(1/g_fxn + 1/h_fxn)
+            self.f_fxn = 0
 
     def __repr__(self):
 
@@ -73,11 +78,11 @@ class Node:
     def child_node(self, action):
         """Creates the new state based on the action given"""
         next_state = self.state.result(action)
-        next_node = Node(next_state, self, action)
+        next_node = Node(next_state, self, action, heuristic=self.heuristic)
         next_node.set_g(self.g_fxn+next_state.get_cost())
         next_node.set_h()
         next_node.set_f()
-
+    
         return next_node
 
     def solution_path(self):
@@ -104,7 +109,7 @@ class Node:
             if self.state.goal_state_2[i] != self.state.puzzle[i]:
                 goal_2 += 1
 
-        return goal_1
+        return min(goal_1,goal_2)
 
     def h2(self) -> int:
         """Second Heuristic; calculates distance from each goal state"""
