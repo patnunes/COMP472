@@ -14,8 +14,5 @@ Repo for COMP472 assignments/projects
 # How to run the code
 
 1. Open project in VS Code
-
-```Visual Studio Code```
-
 2. Navigate to main.py
 3. In the top right corner of VS Code IDE click the green arrow to run python file in terminal
