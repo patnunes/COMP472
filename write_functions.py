@@ -23,13 +23,13 @@ def write_solution(output_directory, execution_time, goal_node, total_cost, algo
 
 
 def write_search(output_directory, closed_list,  algo, heuristic=None):
-
+    print(closed_list)
     if heuristic is None:
             file_name = '0_%s_solution.txt' % (algo)
     else:
             file_name = '0_%s-%s_solution.txt' % (algo, heuristic)
     
-    file = open(file_name, 'w')
+    file = open(output_directory + '/' + file_name, 'w')
     for node in closed_list:
         file.write(str(node))
     file.close()

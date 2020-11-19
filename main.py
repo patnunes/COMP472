@@ -10,7 +10,7 @@ def main():
 
     start = time.time()
     goal_node, total_cost, closedlist = uniform_cost(puzzle3)
-    
+    print(closedlist)
     end = time.time()
     execution_time = end - start
     print(execution_time)
