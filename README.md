@@ -11,11 +11,11 @@ Repo for COMP472 assignments/projects
 | Patricia Nunes (40006956) | patnunes   		|All Contributed	|
 | Alan Giamatti (40041674)   | agiamatti   		|All Contributed		|
 
-# How to run models
+# How to run the code
 
-1. cd to the directry where this repo was cloned in and type
+1. Open project in VS Code
 
 ```jupyter notebook```
 
-2. Go to http://localhost:8888 and select the desired files
-3. In the notebook editor, go to 'Cell' -> 'Run All' to run the models. Their corresponding outputs can be found in the folder 'Outputs'.
+2. Navigate to main.py
+3. In the top right corner of VS Code IDE click the green arrow to run python file in terminal
