@@ -15,4 +15,4 @@ Repo for COMP472 assignments/projects
 # How to run the code
 
 1. cd to the directry where this repo was cloned in and type
-```python main.py``
+```python main.py```
