@@ -1,13 +1,13 @@
 from node import Node
 
-def write_solution(output_directory, execution_time, goal_node, total_cost, algo, heuristic=None):
+def write_solution(ctr,output_directory, execution_time, goal_node, total_cost, algo, heuristic=None):
         if heuristic is None:
-            file_name = '0_%s_solution.txt' % (algo)
+            file_name = '%s_%s_solution.txt' % (ctr, algo)
         else:
-            file_name = '0_%s-%s_solution.txt' % (algo, heuristic)
+            file_name = '%s_%s-%s_solution.txt' % (ctr, algo, heuristic)
 
 
-        if execution_time > 60:
+        if execution_time >= 60:
             with open(output_directory + '/' + file_name, 'w') as file:
                 file.write('No solution')
         else:
@@ -22,14 +22,23 @@ def write_solution(output_directory, execution_time, goal_node, total_cost, algo
 
 
 
-def write_search(output_directory, closed_list,  algo, heuristic=None):
+def write_search(ctr,output_directory, execution_time,  closed_list,  algo, heuristic=None):
     print(closed_list)
     if heuristic is None:
-            file_name = '0_%s_solution.txt' % (algo)
+            file_name = '%s_%s_search.txt' % (ctr, algo)
     else:
-            file_name = '0_%s-%s_solution.txt' % (algo, heuristic)
+            file_name = '%s_%s-%s_search.txt' % (ctr, algo, heuristic)
     
-    file = open(output_directory + '/' + file_name, 'w')
-    for node in closed_list:
-        file.write(str(node))
+    if execution_time > 60:
+            with open(output_directory + '/' + file_name, 'w') as file:
+                file.write('No solution')
+
+    else:
+        # output_lines = []
+        file = open(output_directory + '/' + file_name, 'w')
+        # for node in closed_list:
+        #     output_lines.append(str(node.state).replace('[', '').replace(']', '').replace(',', '').replace('\n',' ').replace(',','\n').strip())
+           
+        with open(output_directory + '/' + file_name, 'w') as file:
+            file.writelines("%s\n" % i for i in closed_list) 
     file.close()

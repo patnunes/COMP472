@@ -17,10 +17,11 @@ def a_star(puzzle, heuristic='h2', time_restriction=60):
         closed_list.add(node)
         print(node)
         if node.state.goal_test():
+            now = time.time()
             print("Solution achieved")
             print(len(closed_list), "paths have been expanded and", len(open_list),
                   "paths remain in the open_list.", "node depth", node.depth)
-            return
+            return node, node.g_fxn, closed_list, (now - start)
 
         for child in node.expand():
             continue_loop = False
@@ -45,7 +46,7 @@ def a_star(puzzle, heuristic='h2', time_restriction=60):
         now = time.time()
         if (now - start) > time_restriction:
             print('Failed to excecute solution within time restriction')
-            return
+            return node, node.g_fxn, closed_list, (now - start)
 
 
 puzzle1 = Puzzle([1, 7, 3, 6, 0, 4, 2, 5], 4, 2)
