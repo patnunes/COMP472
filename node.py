@@ -46,18 +46,8 @@ class Node:
             self.h_fxn = 0
 
     def set_f(self):
-
-        if self.heuristic != None:
-            if self.g_fxn == 0:
-                g_fxn = 1
-            else:
-                g_fxn = self.g_fxn
-
-            if self.h_fxn == 0:
-                h_fxn = 1
-            else:
-                h_fxn = self.h_fxn
-            self.f_fxn = 2/(1/g_fxn + 1/h_fxn)
+        if self.heuristic is not None:
+            self.f_fxn = self.g_fxn + self.h_fxn
         else:
             self.f_fxn = 0
 
