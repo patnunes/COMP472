@@ -6,8 +6,6 @@ from write_functions import write_solution, write_search
 
 def main():
 
-
-
     input_file = './a2-dataset/samplePuzzles.txt'
     output_directory = './output'
     rows = 2
@@ -40,6 +38,6 @@ def main():
             # goal_node, total_cost, closedlist, execution_time = a_star(puzzle, heuristic='h2')
             # write_solution(puzzle_ctr ,output_directory, execution_time, goal_node, total_cost, 'astar', 'h2' )
             # write_search(puzzle_ctr , output_directory,execution_time, closedlist, 'astar', 'h2')
-
+    file.close()
 
 main()
