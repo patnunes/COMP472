@@ -8,9 +8,9 @@ Repo for COMP472 assignments/projects
 
 | Names                              | Github        | Contribution      |
 | ---------------------------------- | ------------- | ----------------- |
-| Louis-Benjamin Durocher (40045719) | LouisBenjamin |     	|
-| Patricia Nunes (40006956)          | patnunes      |      |
-| Alan Giamatti (40041674)           | agiamatti     | 	 	|
+| Louis-Benjamin Durocher (40045719) | LouisBenjamin | Uniform Cost      |
+| Patricia Nunes (40006956)          | patnunes      | Algorithm A⋆      |
+| Alan Giamatti (40041674)           | agiamatti     | Greedy Best First |
 
 # How to run the code
 
