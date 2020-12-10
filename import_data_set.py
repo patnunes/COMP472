@@ -26,10 +26,14 @@ def import_data_set():
         testing_inputs.append_set(Tweet(col[0], col[1], col[2]))
 
     print(training_inputs)
+    print(testing_inputs)
+
     most_used_words = training_inputs.get_most_used_words()
     for elem in most_used_words:
         print(elem)
 
+    training_inputs.implement_filtered_vocabulary()
+    print(training_inputs)
     return training_inputs, testing_inputs
 
 
@@ -51,17 +55,19 @@ class TweetWord:
     """
 
     def __init__(self, tweet_origin, string):
-        self.string = string
-        self.usage = 0
-        self.label_yes = 0
-        self.label_no = 0
-        self.mentioned_tweets = []
-        self.set_label(tweet_origin)
+        self.string = string  # actual word string
+        self.usage = 0  # number of times used
+        self.label_yes = 0  # number of times the word appears with a 'yes' label
+        self.label_no = 0  # number of times the word appears with a 'no' label
+        self.mentioned_tweets = set()  # set of tweet documents where word is mentioned
+        self.add_count(tweet_origin)  # when first created, we want to add the details
+        self.p_yes = 0  # probability given yes
+        self.p_no = 0  # probability given no
 
-    def set_label(self, tweet_origin):
-        """ If the TweetWord is not unique, we want to use set_label to note more usage
+    def add_count(self, tweet_origin):
+        """ If the TweetWord is not unique, we want to use add_count to note more usage
         """
-        self.mentioned_tweets.append(tweet_origin)
+        self.mentioned_tweets.add(tweet_origin)
         self.usage += 1
         if tweet_origin.label == 'yes':
             self.label_yes = self.label_yes + 1
@@ -86,33 +92,52 @@ class TweetWord:
         """
         return {'string': self.string, 'yes': self.label_yes, 'no': self.label_no}
 
+    def set_p(self, p_yes, p_no):
+        """ Set probability for the word; to do once all data is analyzed
+        """
+        self.p_no = p_no
+        self.p_yes = p_yes
+
 
 class DataSet:
     """ The full data set object holding the tweets and the individual words
     """
 
     def __init__(self):
-        self.full_input = []
-        self.total_words = 0
-        self.unique_words = set()
-        self.unique_words_actual = set()
-        self.no_label = []
-        self.yes_label = []
+        self.documents_list = []  # individual tweets in data set
+        self.total_words = 0  # total number of words
+        self.unique_words = set()  # total number of unique words, a set
+        self.unique_words_actual = set()  # total number of unique words, a set - a sanity check
+        self.no_label_words = 0  # number of words labelled 'no'
+        self.yes_label_words = 0  # number of words labelled 'yes'
+        self.no_label_documents = 0  # number of documents/tweets labelled 'no'
+        self.yes_label_documents = 0  # number of  documents/tweets labelled 'yes'
+        self.filtered_vocabulary = False  # whether the data set filtered
 
     def append_set(self, input_tweet):
         """ Populate the data set by appending Tweet Objects to it
         """
-        self.full_input.append(input_tweet)
+        self.documents_list.append(input_tweet)
+        # count yes/ no labels for documents
+        if input_tweet.label == 'yes':
+            self.yes_label_documents += 1
+        else:
+            self.no_label_documents += 1
         input_words = input_tweet.text.split(' ')
         for word in input_words:
             transformed_word = transform(word)
             if transformed_word:
                 self.total_words += 1
+                # count yes/ no labels for words
+                if input_tweet.label == 'yes':
+                    self.yes_label_words += 1
+                else:
+                    self.no_label_words += 1
                 tweet_word = TweetWord(input_tweet, transformed_word)
                 if tweet_word in self.unique_words:
                     for known_word in self.unique_words:
                         if known_word.string == tweet_word.string:
-                            known_word.set_label(input_tweet)
+                            known_word.add_count(input_tweet)
                             break
                 else:
                     self.unique_words.add(tweet_word)
@@ -144,8 +169,28 @@ class DataSet:
         return word_list[:20]
 
     def __repr__(self):
-        return (f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}),'
-                f' Total words: {self.total_words}, Total entries: {len(self.full_input)}')
+        return (f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
+                f'Total words: {self.total_words}, Total Documents: {len(self.documents_list)}, '
+                f'Yes words: {self.yes_label_words}, No words: {self.no_label_words}, '
+                f'Yes docs: {self.yes_label_documents}, No docs: {self.no_label_documents} '
+                f'FV: {str(self.filtered_vocabulary)}')
+
+    def implement_filtered_vocabulary(self):
+        """ Alters entire DataSet Object:
+         deletes all words that occur less than 2 times; cannot be undone
+        """
+        new_set = set()  # cannot change the size of a set we're iterating through
+        if not self.filtered_vocabulary:
+            self.filtered_vocabulary = True
+            for known_word in self.unique_words:
+                if known_word.usage < 2:
+                    self.total_words = self.total_words - known_word.usage
+                    self.no_label_words = self.no_label_words - known_word.label_no
+                    self.yes_label_words = self.yes_label_words - known_word.label_yes
+                    self.unique_words_actual.remove(known_word.string)
+                else:
+                    new_set.add(known_word)
+        self.unique_words = new_set
 
 
 def transform(word):
