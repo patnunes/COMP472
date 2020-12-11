@@ -1,8 +1,8 @@
 """ imports data set and places it in DataSet class
 """
+import math
 
-
-def import_data_set():
+def main():
     """ imports data set
     """
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
@@ -25,15 +25,37 @@ def import_data_set():
         data.append_testing_set(TestingTweet(col[0], col[1], col[2]))
 
     print(data)
-    data.print_testing_set()
 
     most_used_words = data.get_most_used_words()
     for elem in most_used_words:
         print(elem)
 
+    data.calc_total_cond_probability()
+    data.calc_testing_prob()
+    data.print_testing_set()
+
+    f = open("trace_NB-BOW-OV.txt", "a")
+    for document in data.testing_documents_list:
+        if document.p_yes > document.p_no:
+            correctness = determine_correctness(document.label, "yes")
+            text = document.tweet_id + "  " + "yes" + "  " + str(document.p_yes) + "  " +  document.label + "  " + correctness + "\n"
+            f.write(text)
+        else:
+            correctness = determine_correctness(document.label, "no")
+            text = document.tweet_id + "  " + "no" + "  " + str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
+            f.write(text)
+    f.close()
+
     data.implement_filtered_vocabulary()
     print(data)
-    return data
+    data.calc_testing_prob()
+    data.print_testing_set()
+
+def determine_correctness(label, predicted_label):
+    if label == predicted_label:
+        return 'correct'
+    else:
+        return 'wrong'
 
 
 class Tweet:
@@ -69,19 +91,19 @@ class TestingTweet(Tweet):
     def calculate_probability(self, probability_yes, probability_no):
         """ Calculates the yes and no probability the testing tweet
         """
-        combined_word_probability_yes = 1
-        combined_word_probability_no = 1
+        combined_word_probability_yes = 0
+        combined_word_probability_no = 0
         for word in self.word_array:
-            combined_word_probability_no *= word.p_no
-            combined_word_probability_yes *= word.p_yes
+            combined_word_probability_no += math.log(word.p_no, 10)
+            combined_word_probability_yes += math.log(word.p_yes, 10)
 
         self.p_yes = probability_yes * combined_word_probability_yes
         self.p_no = probability_no * combined_word_probability_no
 
     def __repr__(self):
-        return (f'Tweet ID: {self.tweet_id}\t\tLabel: {self.label}\t\t'
-                f'Word_array size: {len(self.word_array)}\t\tUnseen words: {self.unseen_words}\t\t'
-                f'P(yes): {self.p_yes}\t\tP(no): {self.p_no}')
+        return (f'Tweet ID: {self.tweet_id}\tLabel: {self.label}\t'
+                f'Word_array size: {len(self.word_array)}\tUnseen words: {self.unseen_words}\t'
+                f'P(yes): {self.p_yes}\tP(no): {self.p_no}')
 
 
 class TweetWord:
@@ -108,6 +130,12 @@ class TweetWord:
         else:
             self.label_no = self.label_no + 1
 
+    def prob_word_given_class_yes(self, dataset_size, classifier_total, smoothing = 0.01):
+        self.p_yes =  (self.label_yes+smoothing)/(classifier_total+dataset_size)
+    
+    def prob_word_given_class_no(self, dataset_size, classifier_total, smoothing = 0.01):    
+        self.p_no =  (self.label_no+smoothing)/(classifier_total+dataset_size)
+    
     def __repr__(self):
         return (f'Word: {self.string}, y/n: {self.label_yes}/{self.label_no}, '
                 f'Count: {self.usage}, Mentioned in: {len(self.mentioned_tweets)}')
@@ -223,6 +251,16 @@ class DataSet:
                 f'FV: {str(self.filtered_vocabulary)}\n'
                 f'Testing Set Statistics: Total Documents: {len(self.testing_documents_list)}')
 
+    def calc_total_cond_probability(self):
+        for known_word in self.unique_words:
+            known_word.prob_word_given_class_yes(self.yes_label_words, len(self.unique_words))
+            known_word.prob_word_given_class_no(self.no_label_words, len(self.unique_words))
+
+    def calc_testing_prob(self):
+        for document in self.testing_documents_list:
+            document.calculate_probability(self.yes_label_documents/len(self.training_documents_list), self.no_label_documents/len(self.training_documents_list))
+
+    
     def implement_filtered_vocabulary(self):
         """ Alters entire DataSet Object:
          deletes all words that occur less than 2 times; cannot be undone
@@ -255,4 +293,5 @@ def transform(word):
     return word.lower()
 
 
-import_data_set()
+if __name__ == '__main__':
+    main()
