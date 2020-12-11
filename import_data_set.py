@@ -14,27 +14,26 @@ def import_data_set():
     training_lines = training_file.readlines()
     testing_lines = testing_file.readlines()
 
-    training_inputs = DataSet()
-    testing_inputs = DataSet()
+    data = DataSet()
 
     for line in training_lines:
         col = line.split('\t')
-        training_inputs.append_set(Tweet(col[0], col[1], col[2]))
+        data.append_training_set(Tweet(col[0], col[1], col[2]))
 
     for line in testing_lines:
         col = line.split('\t')
-        testing_inputs.append_set(Tweet(col[0], col[1], col[2]))
+        data.append_testing_set(TestingTweet(col[0], col[1], col[2]))
 
-    print(training_inputs)
-    print(testing_inputs)
+    print(data)
+    data.print_testing_set()
 
-    most_used_words = training_inputs.get_most_used_words()
+    most_used_words = data.get_most_used_words()
     for elem in most_used_words:
         print(elem)
 
-    training_inputs.implement_filtered_vocabulary()
-    print(training_inputs)
-    return training_inputs, testing_inputs
+    data.implement_filtered_vocabulary()
+    print(data)
+    return data
 
 
 class Tweet:
@@ -42,12 +41,47 @@ class Tweet:
     """
 
     def __init__(self, tweet_id, text, label):
+        # used for all tweets
         self.tweet_id = tweet_id
         self.text = text
         self.label = label
 
     def __repr__(self):
         return f'Tweet ID: {self.tweet_id}, Text: {self.text}, Label: {self.label}'
+
+
+class TestingTweet(Tweet):
+    """ The class holding a tweet/Document; so we need additional parameters
+    """
+
+    def __init__(self, tweet_id, text, label):
+        super().__init__(tweet_id, text, label)
+        self.word_array = []
+        self.unseen_words = 0  # denotes numer of words in tweet that are not in the training set
+        self.p_yes = 0
+        self.p_no = 0
+
+    def append_to_word_array(self, word):
+        """ Apppends a word to word array
+        """
+        self.word_array.append(word)
+
+    def calculate_probability(self, probability_yes, probability_no):
+        """ Calculates the yes and no probability the testing tweet
+        """
+        combined_word_probability_yes = 1
+        combined_word_probability_no = 1
+        for word in self.word_array:
+            combined_word_probability_no *= word.p_no
+            combined_word_probability_yes *= word.p_yes
+
+        self.p_yes = probability_yes * combined_word_probability_yes
+        self.p_no = probability_no * combined_word_probability_no
+
+    def __repr__(self):
+        return (f'Tweet ID: {self.tweet_id}\t\tLabel: {self.label}\t\t'
+                f'Word_array size: {len(self.word_array)}\t\tUnseen words: {self.unseen_words}\t\t'
+                f'P(yes): {self.p_yes}\t\tP(no): {self.p_no}')
 
 
 class TweetWord:
@@ -92,19 +126,15 @@ class TweetWord:
         """
         return {'string': self.string, 'yes': self.label_yes, 'no': self.label_no}
 
-    def set_p(self, p_yes, p_no):
-        """ Set probability for the word; to do once all data is analyzed
-        """
-        self.p_no = p_no
-        self.p_yes = p_yes
-
 
 class DataSet:
     """ The full data set object holding the tweets and the individual words
     """
 
     def __init__(self):
-        self.documents_list = []  # individual tweets in data set
+        self.training_documents_list = []  # individual tweets in training set
+        self.testing_documents_list = []  # individual tweets in the testing set
+        # training_set data variables
         self.total_words = 0  # total number of words
         self.unique_words = set()  # total number of unique words, a set
         self.unique_words_actual = set()  # total number of unique words, a set - a sanity check
@@ -114,10 +144,10 @@ class DataSet:
         self.yes_label_documents = 0  # number of  documents/tweets labelled 'yes'
         self.filtered_vocabulary = False  # whether the data set filtered
 
-    def append_set(self, input_tweet):
-        """ Populate the data set by appending Tweet Objects to it
+    def append_training_set(self, input_tweet):
+        """ Populate the data set by appending Tweet Objects to it from the training set
         """
-        self.documents_list.append(input_tweet)
+        self.training_documents_list.append(input_tweet)
         # count yes/ no labels for documents
         if input_tweet.label == 'yes':
             self.yes_label_documents += 1
@@ -144,6 +174,21 @@ class DataSet:
 
                 self.unique_words_actual.add(tweet_word.string)
 
+    def append_testing_set(self, input_tweet):
+        """ Populate the data set by appending Tweet Objects to it from the testing set
+        """
+        self.testing_documents_list.append(input_tweet)
+        input_words = input_tweet.text.split(' ')
+        for word in input_words:
+            transformed_word = transform(word)
+            transformed_word_unique = True
+            for known_word in self.unique_words:
+                if known_word.string == transformed_word:
+                    input_tweet.append_to_word_array(known_word)
+                    transformed_word_unique = False
+            if transformed_word_unique:
+                input_tweet.unseen_words += 1
+
     def get_unique_words_count(self):
         """ returns total numbers of unique words (ie vocabulary)
         """
@@ -169,11 +214,14 @@ class DataSet:
         return word_list[:20]
 
     def __repr__(self):
-        return (f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
-                f'Total words: {self.total_words}, Total Documents: {len(self.documents_list)}, '
+        return (f'Training Set Statistics: '
+                f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
+                f'Total words: {self.total_words}, '
+                f'Total Documents: {len(self.training_documents_list)}, '
                 f'Yes words: {self.yes_label_words}, No words: {self.no_label_words}, '
                 f'Yes docs: {self.yes_label_documents}, No docs: {self.no_label_documents} '
-                f'FV: {str(self.filtered_vocabulary)}')
+                f'FV: {str(self.filtered_vocabulary)}\n'
+                f'Testing Set Statistics: Total Documents: {len(self.testing_documents_list)}')
 
     def implement_filtered_vocabulary(self):
         """ Alters entire DataSet Object:
@@ -191,6 +239,14 @@ class DataSet:
                 else:
                     new_set.add(known_word)
         self.unique_words = new_set
+
+    def print_testing_set(self):
+        """ Prints testing set tweets/documents
+        """
+        print('============ Outputing entirety of testing set ============')
+        for testing_document in self.testing_documents_list:
+            print(testing_document)
+        print('============               Done                ============')
 
 
 def transform(word):
