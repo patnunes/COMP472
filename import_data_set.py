@@ -2,9 +2,19 @@
 """
 import math
 
+TP = 0
+FP = 0
+TN = 0 
+FN = 0 
+
 def main():
+
+    
     """ imports data set
     """
+
+    
+    
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
     testing_file = open("./a3-dataset/covid_test_public.tsv", "r", encoding="utf-8")
 
@@ -33,30 +43,81 @@ def main():
     data.calc_total_cond_probability()
     data.calc_testing_prob()
     data.print_testing_set()
-
-    f = open("trace_NB-BOW-OV.txt", "a")
+    
+    f1 = open("trace_NB-BOW-OV.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:
             correctness = determine_correctness(document.label, "yes")
             text = document.tweet_id + "  " + "yes" + "  " + str(document.p_yes) + "  " +  document.label + "  " + correctness + "\n"
-            f.write(text)
+            f1.write(text)
         else:
             correctness = determine_correctness(document.label, "no")
             text = document.tweet_id + "  " + "no" + "  " + str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
-            f.write(text)
-    f.close()
+            f1.write(text)
+    f1.close()
 
     data.implement_filtered_vocabulary()
-    print(data)
+    data.calc_total_cond_probability()
     data.calc_testing_prob()
-    data.print_testing_set()
-
+    
+    f2 = open("trace_NB-BOW-FV.txt", "w+")
+    for document in data.testing_documents_list:
+        if document.p_yes > document.p_no:
+            correctness = determine_correctness(document.label, "yes")
+            text = document.tweet_id + "  " + "yes" + "  " + str(document.p_yes) + "  " +  document.label + "  " + correctness + "\n"
+            f2.write(text)
+        else:
+            correctness = determine_correctness(document.label, "no")
+            text = document.tweet_id + "  " + "no" + "  " + str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
+            f2.write(text)
+    f2.close()
+    
+    print(data)
+    
 def determine_correctness(label, predicted_label):
-    if label == predicted_label:
+
+    if label == predicted_label and label == 'yes':
+        global TP
+        TP += 1
         return 'correct'
-    else:
+        
+    elif label == predicted_label and label == 'no':
+        global TN
+        TN += 1
+        return 'correct'
+        
+    elif label != predicted_label and label == 'yes':
+        global FN
+        FN += 1
         return 'wrong'
 
+    elif label != predicted_label and label == 'no':
+        global FP
+        FP += 1
+        return 'wrong'
+
+def calc_statistics():
+
+    global TP
+    global FP 
+    global TN 
+    global FN 
+    
+    accuracy = (TP+TN) / (TP+TN+FP+FN)
+    yes_p = (TP) / (TP+FP)
+    no_p = (TN)/(TN+FN)
+    yes_r = (TP) / (TP+FN)
+    no_r = (TN)/(TN+FP)
+    yes_f1 = 2*(yes_r*yes_p)/(yes_p+yes_r)
+    no_f1 = 2*(no_r*no_p)/(no_p+no_r)
+
+    TP = 0
+    FP = 0
+    TN = 0 
+    FN = 0 
+
+    return "{0}\n{1}  {2}\n{3}  {4}\n{5} {6}".format(accuracy,yes_p, no_p, yes_r, no_r, yes_f1, no_f1)
+  
 
 class Tweet:
     """ The class holding a single tweet with its ID, text and label
@@ -97,8 +158,8 @@ class TestingTweet(Tweet):
             combined_word_probability_no += math.log(word.p_no, 10)
             combined_word_probability_yes += math.log(word.p_yes, 10)
 
-        self.p_yes = probability_yes * combined_word_probability_yes
-        self.p_no = probability_no * combined_word_probability_no
+        self.p_yes = math.log(probability_yes,10) + combined_word_probability_yes
+        self.p_no = math.log(probability_no,10)  + combined_word_probability_no
 
     def __repr__(self):
         return (f'Tweet ID: {self.tweet_id}\tLabel: {self.label}\t'
