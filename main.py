@@ -57,14 +57,15 @@ def main():
             file_1.write(text)
     file_1.close()
 
-    data.implement_filtered_vocabulary()
-    data.calc_total_cond_probability()
-    data.calc_testing_prob()
-    # data.print_unique_words()
+    data.print_unique_words("words_OV")
 
     file_3 = open("eval NB-BOW-OV.txt", "w+")
     file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_3.close()
+
+    data.implement_filtered_vocabulary()
+    data.calc_total_cond_probability()
+    data.calc_testing_prob()
 
     # resetting these values for the 'calc_statistics; of the FV classifier
     t_p = 0  # true positive
@@ -88,6 +89,7 @@ def main():
             file_2.write(text)
     file_2.close()
 
+    data.print_unique_words("words_FV")
     file_4 = open("eval_NB-BOW-FV.txt", "w+")
     file_4.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_4.close()
@@ -313,10 +315,10 @@ class DataSet:
         """
         return self.unique_words
 
-    def print_unique_words(self):
+    def print_unique_words(self, document_name):
         """ Print List of Unique Words to a text file
         """
-        file = open("WORDS.txt", "w+")
+        file = open(f"{document_name}.txt", "w+")
         for word in self.unique_words:
             file.write(f'{word.string}, p_yes: {word.p_yes}, p_no: {word.p_no}\n')
 
@@ -344,9 +346,12 @@ class DataSet:
     def calc_total_cond_probability(self):
         """ Calculate Probability of every (unique) word in the (training) data set
         """
+        counter = 0
         for known_word in self.unique_words:
+            counter += 1
             known_word.prob_word_given_class_yes(self.yes_label_words, len(self.unique_words))
             known_word.prob_word_given_class_no(self.no_label_words, len(self.unique_words))
+        print('total count', counter)
 
     def calc_testing_prob(self):
         """ Calculate Probability of every document in the testing data set
