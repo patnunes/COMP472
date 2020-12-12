@@ -33,10 +33,11 @@ def main():
     data.calc_testing_prob()
     # data.print_testing_set()
 
-    t_p = 0
-    f_p = 0
-    t_n = 0
-    f_n = 0
+    t_p = 0  # true positive
+    f_p = 0  # false positive
+    t_n = 0  # true negative
+    f_n = 0  # false negative
+
     file_1 = open("trace_NB-BOW-OV.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:
@@ -62,10 +63,11 @@ def main():
     file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_3.close()
 
-    t_p = 0
-    f_p = 0
-    t_n = 0
-    f_n = 0
+    # resetting these values for the 'calc_statistics; of the FV classifier
+    t_p = 0  # true positive
+    f_p = 0  # false positive
+    t_n = 0  # true negative
+    f_n = 0  # false negative
 
     file_2 = open("trace_NB-BOW-FV.txt", "w+")
     for document in data.testing_documents_list:
