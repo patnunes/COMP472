@@ -3,7 +3,7 @@
 import math
 import string
 
-TOKENIZING_MODE = 0  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
+TOKENIZING_MODE = 1  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
 SMOOTHING = 0.01  # smoothing value
 
 
@@ -59,7 +59,7 @@ def main():
 
     data.print_unique_words("words_OV")
 
-    file_3 = open("eval NB-BOW-OV.txt", "w+")
+    file_3 = open("eval_NB-BOW-OV.txt", "w+")
     file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_3.close()
 
@@ -318,7 +318,7 @@ class DataSet:
     def print_unique_words(self, document_name):
         """ Print List of Unique Words to a text file
         """
-        file = open(f"{document_name}.txt", "w+")
+        file = open(f"{document_name}.txt", "w+",    encoding="utf-8")
         for word in self.unique_words:
             file.write(f'{word.string}, p_yes: {word.p_yes}, p_no: {word.p_no}\n')
 
