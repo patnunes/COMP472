@@ -1,20 +1,13 @@
 """ imports data set and places it in DataSet class
 """
 import math
+import string
 
-TP = 0
-FP = 0
-TN = 0 
-FN = 0 
 
 def main():
-
-    
     """ imports data set
     """
 
-    
-    
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
     testing_file = open("./a3-dataset/covid_test_public.tsv", "r", encoding="utf-8")
 
@@ -36,96 +29,105 @@ def main():
 
     print(data)
 
-    most_used_words = data.get_most_used_words()
-    for elem in most_used_words:
-        print(elem)
-
     data.calc_total_cond_probability()
     data.calc_testing_prob()
-    data.print_testing_set()
-    
-    f1 = open("trace_NB-BOW-OV.txt", "w+")
+    # data.print_testing_set()
+
+    t_p = 0
+    f_p = 0
+    t_n = 0
+    f_n = 0
+    file_1 = open("trace_NB-BOW-OV.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:
-            correctness = determine_correctness(document.label, "yes")
-            text = document.tweet_id + "  " + "yes" + "  " + str(document.p_yes) + "  " +  document.label + "  " + correctness + "\n"
-            f1.write(text)
+            correctness, t_p, f_p, t_n, f_n = determine_correctness(
+                document.label, "yes", t_p, f_p, t_n, f_n)
+            text = document.tweet_id + "  " + "yes" + "  " + \
+                str(document.p_yes) + "  " + document.label + "  " + correctness + "\n"
+            file_1.write(text)
         else:
-            correctness = determine_correctness(document.label, "no")
-            text = document.tweet_id + "  " + "no" + "  " + str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
-            f1.write(text)
-    f1.close()
-
-    f3 = open("eval NB-BOW-OV.txt", "w+")
-    f3.write(calc_statistics())
-    f3.close()
+            correctness, t_p, f_p, t_n, f_n = determine_correctness(
+                document.label, "no", t_p, f_p, t_n, f_n)
+            text = document.tweet_id + "  " + "no" + "  " + \
+                str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
+            file_1.write(text)
+    file_1.close()
 
     data.implement_filtered_vocabulary()
     data.calc_total_cond_probability()
     data.calc_testing_prob()
-    
-    f2 = open("trace_NB-BOW-FV.txt", "w+")
+    # data.print_unique_words()
+
+    file_3 = open("eval NB-BOW-OV.txt", "w+")
+    file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
+    file_3.close()
+
+    t_p = 0
+    f_p = 0
+    t_n = 0
+    f_n = 0
+
+    file_2 = open("trace_NB-BOW-FV.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:
-            correctness = determine_correctness(document.label, "yes")
-            text = document.tweet_id + "  " + "yes" + "  " + str(document.p_yes) + "  " +  document.label + "  " + correctness + "\n"
-            f2.write(text)
+            correctness, t_p, f_p, t_n, f_n = determine_correctness(
+                document.label, "yes", t_p, f_p, t_n, f_n)
+            text = document.tweet_id + "  " + "yes" + "  " + \
+                str(document.p_yes) + "  " + document.label + "  " + correctness + "\n"
+            file_2.write(text)
         else:
-            correctness = determine_correctness(document.label, "no")
-            text = document.tweet_id + "  " + "no" + "  " + str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
-            f2.write(text)
-    f2.close()
-    
-    f4 = open("eval_NB-BOW-FV.txt", "w+")
-    f4.write(calc_statistics())
-    f4.close()
+            correctness, t_p, f_p, t_n, f_n = determine_correctness(
+                document.label, "no", t_p, f_p, t_n, f_n)
+            text = document.tweet_id + "  " + "no" + "  " + \
+                str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
+            file_2.write(text)
+    file_2.close()
+
+    file_4 = open("eval_NB-BOW-FV.txt", "w+")
+    file_4.write(calc_statistics(t_p, f_p, t_n, f_n))
+    file_4.close()
 
     print(data)
-    
-def determine_correctness(label, predicted_label):
 
+
+def determine_correctness(label, predicted_label, t_p, f_p, t_n, f_n):
+    """ Returns whether prediction was right or not; updates all the variables t_p, f_p, t_n, f_n
+    """
     if label == predicted_label and label == 'yes':
-        global TP
-        TP += 1
-        return 'correct'
-        
+        t_p += 1
+        return 'correct', t_p, f_p, t_n, f_n
+
     elif label == predicted_label and label == 'no':
-        global TN
-        TN += 1
-        return 'correct'
-        
+        t_n += 1
+        return 'correct', t_p, f_p, t_n, f_n
+
     elif label != predicted_label and label == 'yes':
-        global FN
-        FN += 1
-        return 'wrong'
+        f_n += 1
+        return 'wrong', t_p, f_p, t_n, f_n
 
     elif label != predicted_label and label == 'no':
-        global FP
-        FP += 1
-        return 'wrong'
+        f_p += 1
+        return 'wrong', t_p, f_p, t_n, f_n
 
-def calc_statistics():
 
-    global TP
-    global FP 
-    global TN 
-    global FN 
-    
-    accuracy = (TP+TN) / (TP+TN+FP+FN)
-    yes_p = (TP) / (TP+FP)
-    no_p = (TN)/(TN+FN)
-    yes_r = (TP) / (TP+FN)
-    no_r = (TN)/(TN+FP)
+def calc_statistics(t_p, f_p, t_n, f_n):
+    """ Calculates statistics based on inputs t_p, f_p, t_n, f_n
+    """
+    accuracy = (t_p+t_n) / (t_p +
+                            t_n+f_p+f_n)
+    yes_p = (t_p) / (t_p+f_p)
+    no_p = (t_n)/(t_n+f_n)
+    yes_r = (t_p) / (t_p+f_n)
+    no_r = (t_n)/(t_n+f_p)
     yes_f1 = 2*(yes_r*yes_p)/(yes_p+yes_r)
     no_f1 = 2*(no_r*no_p)/(no_p+no_r)
 
-    TP = 0
-    FP = 0
-    TN = 0 
-    FN = 0 
+    print("{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(
+        accuracy, yes_p, no_p, yes_r, no_r, yes_f1, no_f1))
 
-    return "{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(accuracy,yes_p, no_p, yes_r, no_r, yes_f1, no_f1)
-  
+    return "{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(accuracy, yes_p, no_p,
+                                                      yes_r, no_r, yes_f1, no_f1)
+
 
 class Tweet:
     """ The class holding a single tweet with its ID, text and label
@@ -142,13 +144,13 @@ class Tweet:
 
 
 class TestingTweet(Tweet):
-    """ The class holding a tweet/Document; so we need additional parameters
+    """ The class holding a Tweet/Document; so we need additional parameters
     """
 
     def __init__(self, tweet_id, text, label):
         super().__init__(tweet_id, text, label)
         self.word_array = []
-        self.unseen_words = 0  # denotes numer of words in tweet that are not in the training set
+        self.unseen_words = []  # denotes words in tweet that are not in the training set
         self.p_yes = 0
         self.p_no = 0
 
@@ -158,29 +160,30 @@ class TestingTweet(Tweet):
         self.word_array.append(word)
 
     def calculate_probability(self, probability_yes, probability_no):
-        """ Calculates the yes and no probability the testing tweet
+        """ Calculates the yes and no probability the testing Tweet/Document
         """
-        combined_word_probability_yes = 0
-        combined_word_probability_no = 0
+        combined_word_probability_yes = math.log(probability_yes, 10)
+        combined_word_probability_no = math.log(probability_no, 10)
         for word in self.word_array:
             combined_word_probability_no += math.log(word.p_no, 10)
             combined_word_probability_yes += math.log(word.p_yes, 10)
 
-        self.p_yes = math.log(probability_yes,10) + combined_word_probability_yes
-        self.p_no = math.log(probability_no,10)  + combined_word_probability_no
+        self.p_yes = combined_word_probability_yes
+        self.p_no = combined_word_probability_no
 
     def __repr__(self):
-        return (f'Tweet ID: {self.tweet_id}\tLabel: {self.label}\t'
-                f'Word_array size: {len(self.word_array)}\tUnseen words: {self.unseen_words}\t'
-                f'P(yes): {self.p_yes}\tP(no): {self.p_no}')
+        return (f'Tweet ID: {self.tweet_id}\t\tLabel: {self.label}\t\t'
+                f'Word_array size: {len(self.word_array)}\t\tUnseen words: {len(self.unseen_words)}'
+                f'\t\tP(yes): {self.p_yes}\t\tP(no): {self.p_no}\nTweet:{self.text}'
+                f'\nUnseen words:{self.unseen_words}')
 
 
 class TweetWord:
     """ The class containing unique word statistics
     """
 
-    def __init__(self, tweet_origin, string):
-        self.string = string  # actual word string
+    def __init__(self, tweet_origin, input_string):
+        self.string = input_string  # actual word string
         self.usage = 0  # number of times used
         self.label_yes = 0  # number of times the word appears with a 'yes' label
         self.label_no = 0  # number of times the word appears with a 'no' label
@@ -199,12 +202,16 @@ class TweetWord:
         else:
             self.label_no = self.label_no + 1
 
-    def prob_word_given_class_yes(self, dataset_size, classifier_total, smoothing = 0.01):
-        self.p_yes =  (self.label_yes+smoothing)/(classifier_total+dataset_size)
-    
-    def prob_word_given_class_no(self, dataset_size, classifier_total, smoothing = 0.01):    
-        self.p_no =  (self.label_no+smoothing)/(classifier_total+dataset_size)
-    
+    def prob_word_given_class_yes(self, dataset_size, classifier_total, smoothing=0.01):
+        """ Calculate Probability that the word is from Class Yes
+        """
+        self.p_yes = (self.label_yes+smoothing)/(classifier_total+dataset_size)
+
+    def prob_word_given_class_no(self, dataset_size, classifier_total, smoothing=0.01):
+        """ Calculate Probability that the word is from Class No
+        """
+        self.p_no = (self.label_no+smoothing)/(classifier_total+dataset_size)
+
     def __repr__(self):
         return (f'Word: {self.string}, y/n: {self.label_yes}/{self.label_no}, '
                 f'Count: {self.usage}, Mentioned in: {len(self.mentioned_tweets)}')
@@ -284,7 +291,7 @@ class DataSet:
                     input_tweet.append_to_word_array(known_word)
                     transformed_word_unique = False
             if transformed_word_unique:
-                input_tweet.unseen_words += 1
+                input_tweet.unseen_words.append(transformed_word)
 
     def get_unique_words_count(self):
         """ returns total numbers of unique words (ie vocabulary)
@@ -300,6 +307,15 @@ class DataSet:
         """ returns unique words set (for some reason?)
         """
         return self.unique_words
+
+    def print_unique_words(self):
+        """ Print List of Unique Words to a text file
+        """
+        file = open("WORDS.txt", "w+")
+        for word in self.unique_words:
+            file.write(f'{word.string}, p_yes: {word.p_yes}, p_no: {word.p_no}\n')
+
+        file.close()
 
     def get_most_used_words(self):
         """ gets the 20 most used words
@@ -321,15 +337,20 @@ class DataSet:
                 f'Testing Set Statistics: Total Documents: {len(self.testing_documents_list)}')
 
     def calc_total_cond_probability(self):
+        """ Calculate Probability of every (unique) word in the (training) data set
+        """
         for known_word in self.unique_words:
             known_word.prob_word_given_class_yes(self.yes_label_words, len(self.unique_words))
             known_word.prob_word_given_class_no(self.no_label_words, len(self.unique_words))
 
     def calc_testing_prob(self):
+        """ Calculate Probability of every document in the testing data set
+        """
         for document in self.testing_documents_list:
-            document.calculate_probability(self.yes_label_documents/len(self.training_documents_list), self.no_label_documents/len(self.training_documents_list))
+            probability_yes = self.yes_label_documents/len(self.training_documents_list)
+            probability_no = self.no_label_documents/len(self.training_documents_list)
+            document.calculate_probability(probability_yes, probability_no)
 
-    
     def implement_filtered_vocabulary(self):
         """ Alters entire DataSet Object:
          deletes all words that occur less than 2 times; cannot be undone
@@ -359,7 +380,9 @@ class DataSet:
 def transform(word):
     """ Transforms a word to the wanted format
     """
-    return word.lower()
+    table = str.maketrans('', '', string.punctuation)
+    stripped = word.translate(table)
+    return stripped.lower()
 
 
 if __name__ == '__main__':
