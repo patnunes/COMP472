@@ -56,6 +56,10 @@ def main():
             f1.write(text)
     f1.close()
 
+    f3 = open("eval NB-BOW-OV.txt", "w+")
+    f3.write(calc_statistics())
+    f3.close()
+
     data.implement_filtered_vocabulary()
     data.calc_total_cond_probability()
     data.calc_testing_prob()
@@ -72,6 +76,10 @@ def main():
             f2.write(text)
     f2.close()
     
+    f4 = open("eval_NB-BOW-FV.txt", "w+")
+    f4.write(calc_statistics())
+    f4.close()
+
     print(data)
     
 def determine_correctness(label, predicted_label):
@@ -116,7 +124,7 @@ def calc_statistics():
     TN = 0 
     FN = 0 
 
-    return "{0}\n{1}  {2}\n{3}  {4}\n{5} {6}".format(accuracy,yes_p, no_p, yes_r, no_r, yes_f1, no_f1)
+    return "{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(accuracy,yes_p, no_p, yes_r, no_r, yes_f1, no_f1)
   
 
 class Tweet:
