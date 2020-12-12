@@ -3,6 +3,8 @@
 import math
 import string
 
+TOKENIZING_MODE = 0
+
 
 def main():
     """ imports data set and runs the NB BOW Classifier on it
@@ -204,15 +206,15 @@ class TweetWord:
         else:
             self.label_no = self.label_no + 1
 
-    def prob_word_given_class_yes(self, dataset_size, classifier_total, smoothing=0.01):
+    def prob_word_given_class_yes(self, classifier_total, dataset_size, smoothing=0.01):
         """ Calculate Probability that the word is from Class Yes
         """
-        self.p_yes = (self.label_yes+smoothing)/(classifier_total+dataset_size)
+        self.p_yes = (self.label_yes+smoothing)/(classifier_total+dataset_size*smoothing)
 
-    def prob_word_given_class_no(self, dataset_size, classifier_total, smoothing=0.01):
+    def prob_word_given_class_no(self, classifier_total, dataset_size, smoothing=0.01):
         """ Calculate Probability that the word is from Class No
         """
-        self.p_no = (self.label_no+smoothing)/(classifier_total+dataset_size)
+        self.p_no = (self.label_no+smoothing)/(classifier_total+dataset_size*smoothing)
 
     def __repr__(self):
         return (f'Word: {self.string}, y/n: {self.label_yes}/{self.label_no}, '
@@ -382,9 +384,12 @@ class DataSet:
 def transform(word):
     """ Transforms a word to the wanted format
     """
-    table = str.maketrans('', '', string.punctuation)
-    stripped = word.translate(table)
-    return stripped.lower()
+    if TOKENIZING_MODE > 0:
+        table = str.maketrans('', '', string.punctuation)
+        stripped = word.translate(table)
+        return stripped.lower()
+    else:
+        return word.lower()
 
 
 if __name__ == '__main__':
