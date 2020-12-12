@@ -3,7 +3,8 @@
 import math
 import string
 
-TOKENIZING_MODE = 0
+TOKENIZING_MODE = 0  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
+SMOOTHING = 0.01  # smoothing value
 
 
 def main():
@@ -206,12 +207,12 @@ class TweetWord:
         else:
             self.label_no = self.label_no + 1
 
-    def prob_word_given_class_yes(self, classifier_total, dataset_size, smoothing=0.01):
+    def prob_word_given_class_yes(self, classifier_total, dataset_size, smoothing=SMOOTHING):
         """ Calculate Probability that the word is from Class Yes
         """
         self.p_yes = (self.label_yes+smoothing)/(classifier_total+dataset_size*smoothing)
 
-    def prob_word_given_class_no(self, classifier_total, dataset_size, smoothing=0.01):
+    def prob_word_given_class_no(self, classifier_total, dataset_size, smoothing=SMOOTHING):
         """ Calculate Probability that the word is from Class No
         """
         self.p_no = (self.label_no+smoothing)/(classifier_total+dataset_size*smoothing)
