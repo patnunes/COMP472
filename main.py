@@ -5,7 +5,7 @@ import string
 
 
 def main():
-    """ imports data set
+    """ imports data set and runs the NB BOW Classifier on it
     """
 
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
@@ -21,7 +21,7 @@ def main():
 
     for line in training_lines:
         col = line.split('\t')
-        data.append_training_set(Tweet(col[0], col[1], col[2]))
+        data.append_training_set(Tweet(col[0], col[1], col[2]))  # must append training set first
 
     for line in testing_lines:
         col = line.split('\t')
@@ -146,7 +146,7 @@ class Tweet:
 
 
 class TestingTweet(Tweet):
-    """ The class holding a Tweet/Document; so we need additional parameters
+    """ The class holding a Tweet/Document for the Testing set; so we need additional parameters
     """
 
     def __init__(self, tweet_id, text, label):
