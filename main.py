@@ -3,7 +3,7 @@
 import math
 import string
 
-TOKENIZING_MODE = 1  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
+TOKENIZING_MODE = 0  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
 SMOOTHING = 0.01  # smoothing value
 
 
@@ -14,8 +14,7 @@ def main():
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
     testing_file = open("./a3-dataset/covid_test_public.tsv", "r", encoding="utf-8")
 
-    next(training_file)  # skip first line
-    next(testing_file)  # skip first line
+    next(training_file)  # skip first line, as it is a header
 
     training_lines = training_file.readlines()
     testing_lines = testing_file.readlines()
@@ -34,6 +33,7 @@ def main():
 
     data.calc_total_cond_probability()
     data.calc_testing_prob()
+    data.confirm_count()
     # data.print_testing_set()
 
     t_p = 0  # true positive
@@ -64,10 +64,12 @@ def main():
     file_3.close()
 
     data.implement_filtered_vocabulary()
+    print(data)
     data.calc_total_cond_probability()
     data.calc_testing_prob()
+    data.confirm_count()
 
-    # resetting these values for the 'calc_statistics; of the FV classifier
+    # resetting these values for the 'calc_statistics' of the FV classifier
     t_p = 0  # true positive
     f_p = 0  # false positive
     t_n = 0  # true negative
@@ -93,8 +95,6 @@ def main():
     file_4 = open("eval_NB-BOW-FV.txt", "w+")
     file_4.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_4.close()
-
-    print(data)
 
 
 def determine_correctness(label, predicted_label, t_p, f_p, t_n, f_n):
@@ -161,19 +161,15 @@ class TestingTweet(Tweet):
         self.p_yes = 0
         self.p_no = 0
 
-    def append_to_word_array(self, word):
-        """ Apppends a word to word array
-        """
-        self.word_array.append(word)
-
     def calculate_probability(self, probability_yes, probability_no):
         """ Calculates the yes and no probability the testing Tweet/Document
         """
+        # priors
         combined_word_probability_yes = math.log(probability_yes, 10)
         combined_word_probability_no = math.log(probability_no, 10)
         for word in self.word_array:
-            combined_word_probability_no += math.log(word.p_no, 10)
             combined_word_probability_yes += math.log(word.p_yes, 10)
+            combined_word_probability_no += math.log(word.p_no, 10)
 
         self.p_yes = combined_word_probability_yes
         self.p_no = combined_word_probability_no
@@ -292,12 +288,12 @@ class DataSet:
         input_words = input_tweet.text.split(' ')
         for word in input_words:
             transformed_word = transform(word)
-            transformed_word_unique = True
+            transformed_word_new = True
             for known_word in self.unique_words:
                 if known_word.string == transformed_word:
-                    input_tweet.append_to_word_array(known_word)
-                    transformed_word_unique = False
-            if transformed_word_unique:
+                    input_tweet.word_array.append(known_word)
+                    transformed_word_new = False
+            if transformed_word_new:
                 input_tweet.unseen_words.append(transformed_word)
 
     def get_unique_words_count(self):
@@ -311,16 +307,18 @@ class DataSet:
         return len(self.total_words)
 
     def get_unique_words(self):
-        """ returns unique words set (for some reason?)
+        """ returns unique words set
         """
         return self.unique_words
 
     def print_unique_words(self, document_name):
         """ Print List of Unique Words to a text file
         """
-        file = open(f"{document_name}.txt", "w+",    encoding="utf-8")
+        file = open(f"{document_name}.txt", "w+", encoding="utf-8")
         for word in self.unique_words:
-            file.write(f'{word.string}, p_yes: {word.p_yes}, p_no: {word.p_no}\n')
+            file.write(
+                f'{word.string}, p_yes: {word.p_yes}, p_no: {word.p_no}, '
+                f'c_yes: {word.label_yes}, c_no: {word.label_no}\n')
 
         file.close()
 
@@ -346,24 +344,21 @@ class DataSet:
     def calc_total_cond_probability(self):
         """ Calculate Probability of every (unique) word in the (training) data set
         """
-        counter = 0
         for known_word in self.unique_words:
-            counter += 1
             known_word.prob_word_given_class_yes(self.yes_label_words, len(self.unique_words))
             known_word.prob_word_given_class_no(self.no_label_words, len(self.unique_words))
-        print('total count', counter)
 
     def calc_testing_prob(self):
         """ Calculate Probability of every document in the testing data set
         """
+        probability_yes = self.yes_label_documents/len(self.training_documents_list)
+        probability_no = self.no_label_documents/len(self.training_documents_list)
         for document in self.testing_documents_list:
-            probability_yes = self.yes_label_documents/len(self.training_documents_list)
-            probability_no = self.no_label_documents/len(self.training_documents_list)
             document.calculate_probability(probability_yes, probability_no)
 
     def implement_filtered_vocabulary(self):
         """ Alters entire DataSet Object:
-         deletes all words that occur less than 2 times; cannot be undone
+            deletes all words that occur less than 2 times; cannot be undone
         """
         new_set = set()  # cannot change the size of a set we're iterating through
         if not self.filtered_vocabulary:
@@ -385,6 +380,17 @@ class DataSet:
         for testing_document in self.testing_documents_list:
             print(testing_document)
         print('============               Done                ============')
+
+    def confirm_count(self):
+        """ Confirms the yes_label_words and no_label_words parameters
+        """
+        count_yes = 0
+        count_no = 0
+        for known_word in self.unique_words:
+            count_yes += known_word.label_yes
+            count_no += known_word.label_no
+        assert count_yes == self.yes_label_words
+        assert count_no == self.no_label_words
 
 
 def transform(word):
