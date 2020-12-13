@@ -4,6 +4,7 @@ import math
 import string
 
 TOKENIZING_MODE = 0  # determines tokenizing; 0 = lower case; 1 = lower case + ignore punctuation
+USAGE_LIMIT = 2  # removes words with less than USAGE_LIMIT when implementing filtered vocab
 SMOOTHING = 0.01  # smoothing value
 
 
@@ -34,7 +35,6 @@ def main():
     data.calc_total_cond_probability()
     data.calc_testing_prob()
     data.confirm_count()
-    # data.print_testing_set()
 
     t_p = 0  # true positive
     f_p = 0  # false positive
@@ -43,7 +43,7 @@ def main():
 
     file_1 = open("trace_NB-BOW-OV.txt", "w+")
     for document in data.testing_documents_list:
-        if document.p_yes > document.p_no:
+        if document.p_yes > document.p_no:  # find the higher probability between yes/no classes
             correctness, t_p, f_p, t_n, f_n = determine_correctness(
                 document.label, "yes", t_p, f_p, t_n, f_n)
             text = document.tweet_id + "  " + "yes" + "  " + \
@@ -63,7 +63,8 @@ def main():
     file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
     file_3.close()
 
-    data.implement_filtered_vocabulary()
+    data.implement_filtered_vocabulary()  # this method removes words with less than 2 USAGE
+
     print(data)
     data.calc_total_cond_probability()
     data.calc_testing_prob()
@@ -167,9 +168,13 @@ class TestingTweet(Tweet):
         # priors
         combined_word_probability_yes = math.log(probability_yes, 10)
         combined_word_probability_no = math.log(probability_no, 10)
+
         for word in self.word_array:
-            combined_word_probability_yes += math.log(word.p_yes, 10)
-            combined_word_probability_no += math.log(word.p_no, 10)
+            # this check is needed for filtered vocabulary;
+            # which sets the prob of filtered words to 0
+            if word.p_yes > 0 and word.p_no > 0:
+                combined_word_probability_yes += math.log(word.p_yes, 10)
+                combined_word_probability_no += math.log(word.p_no, 10)
 
         self.p_yes = combined_word_probability_yes
         self.p_no = combined_word_probability_no
@@ -322,15 +327,6 @@ class DataSet:
 
         file.close()
 
-    def get_most_used_words(self):
-        """ gets the 20 most used words
-        """
-        word_list = []
-        for known_word in self.unique_words:
-            word_list.append(known_word)
-        word_list = sorted(word_list, key=lambda word: word.usage, reverse=True)
-        return word_list[:20]
-
     def __repr__(self):
         return (f'Training Set Statistics: '
                 f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
@@ -364,22 +360,16 @@ class DataSet:
         if not self.filtered_vocabulary:
             self.filtered_vocabulary = True
             for known_word in self.unique_words:
-                if known_word.usage < 2:
+                if known_word.usage < USAGE_LIMIT:
                     self.total_words = self.total_words - known_word.usage
                     self.no_label_words = self.no_label_words - known_word.label_no
                     self.yes_label_words = self.yes_label_words - known_word.label_yes
                     self.unique_words_actual.remove(known_word.string)
+                    known_word.p_yes = 0
+                    known_word.p_no = 0
                 else:
                     new_set.add(known_word)
         self.unique_words = new_set
-
-    def print_testing_set(self):
-        """ Prints testing set tweets/documents
-        """
-        print('============ Outputing entirety of testing set ============')
-        for testing_document in self.testing_documents_list:
-            print(testing_document)
-        print('============               Done                ============')
 
     def confirm_count(self):
         """ Confirms the yes_label_words and no_label_words parameters
