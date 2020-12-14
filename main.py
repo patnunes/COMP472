@@ -1,4 +1,5 @@
-""" imports data set and places it in DataSet class
+""" import a training and testing tsv files of Tweets and try to label the testing set based on
+    the training set with the Naive-Bayes Bag of Words Classifier
 """
 import math
 import string
@@ -15,7 +16,7 @@ def main():
     training_file = open("./a3-dataset/covid_training.tsv", "r", encoding="utf-8")
     testing_file = open("./a3-dataset/covid_test_public.tsv", "r", encoding="utf-8")
 
-    next(training_file)  # skip first line, as it is a header
+    next(training_file)  # skip first line, as it is a header in the training file
 
     training_lines = training_file.readlines()
     testing_lines = testing_file.readlines()
@@ -30,7 +31,7 @@ def main():
         col = line.split('\t')
         data.append_testing_set(TestingTweet(col[0], col[1], col[2]))
 
-    print(data)
+    print(data)  # print statistics of the dataset
 
     data.calc_total_cond_probability()
     data.calc_testing_prob()
@@ -44,6 +45,9 @@ def main():
     file_1 = open("trace_NB-BOW-OV.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:  # find the higher probability between yes/no classes
+            # if p_yes is larger; our predicted label is "yes", we compare this with the actual
+            # label to determine the correctness ("correct" or "wrong") and mark it as a
+            # true positive or false positive accordingly
             correctness, t_p, f_p, t_n, f_n = determine_correctness(
                 document.label, "yes", t_p, f_p, t_n, f_n)
             text = document.tweet_id + "  " + "yes" + "  " + \
@@ -65,7 +69,7 @@ def main():
 
     data.implement_filtered_vocabulary()  # this method removes words with less than 2 USAGE
 
-    print(data)
+    print(data)  # print statistics of the filtered vocabulary dataset
     data.calc_total_cond_probability()
     data.calc_testing_prob()
     data.confirm_count()
@@ -121,14 +125,13 @@ def determine_correctness(label, predicted_label, t_p, f_p, t_n, f_n):
 def calc_statistics(t_p, f_p, t_n, f_n):
     """ Calculates statistics based on inputs t_p, f_p, t_n, f_n
     """
-    accuracy = (t_p+t_n) / (t_p +
-                            t_n+f_p+f_n)
-    yes_p = (t_p) / (t_p+f_p)
-    no_p = (t_n)/(t_n+f_n)
-    yes_r = (t_p) / (t_p+f_n)
-    no_r = (t_n)/(t_n+f_p)
-    yes_f1 = 2*(yes_r*yes_p)/(yes_p+yes_r)
-    no_f1 = 2*(no_r*no_p)/(no_p+no_r)
+    accuracy = round((t_p+t_n) / (t_p + t_n + f_p + f_n), 4)
+    yes_p = round((t_p) / (t_p+f_p), 4)
+    no_p = round((t_n)/(t_n+f_n), 4)
+    yes_r = round((t_p) / (t_p+f_n), 4)
+    no_r = round((t_n)/(t_n+f_p), 4)
+    yes_f1 = round(2*(yes_r*yes_p)/(yes_p+yes_r), 4)
+    no_f1 = round(2*(no_r*no_p)/(no_p+no_r), 4)
 
     print("{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(
         accuracy, yes_p, no_p, yes_r, no_r, yes_f1, no_f1))
@@ -171,8 +174,8 @@ class TestingTweet(Tweet):
 
         for word in self.word_array:
             # this check is needed for filtered vocabulary;
-            # which sets the prob of filtered words to 0
-            if word.p_yes > 0 and word.p_no > 0:
+            # which sets the prob of filtered words to "filtered"
+            if isinstance(word.p_yes, float) and isinstance(word.p_no, float):
                 combined_word_probability_yes += math.log(word.p_yes, 10)
                 combined_word_probability_no += math.log(word.p_no, 10)
 
@@ -328,13 +331,13 @@ class DataSet:
         file.close()
 
     def __repr__(self):
-        return (f'Training Set Statistics: '
+        return (f'Dataset Statistics:: Filtered Vocabulary: {str(self.filtered_vocabulary)}\n'
+                f'Training Set Statistics: '
                 f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
                 f'Total words: {self.total_words}, '
                 f'Total Documents: {len(self.training_documents_list)}, '
                 f'Yes words: {self.yes_label_words}, No words: {self.no_label_words}, '
-                f'Yes docs: {self.yes_label_documents}, No docs: {self.no_label_documents} '
-                f'FV: {str(self.filtered_vocabulary)}\n'
+                f'Yes docs: {self.yes_label_documents}, No docs: {self.no_label_documents}\n'
                 f'Testing Set Statistics: Total Documents: {len(self.testing_documents_list)}')
 
     def calc_total_cond_probability(self):
@@ -365,8 +368,8 @@ class DataSet:
                     self.no_label_words = self.no_label_words - known_word.label_no
                     self.yes_label_words = self.yes_label_words - known_word.label_yes
                     self.unique_words_actual.remove(known_word.string)
-                    known_word.p_yes = 0
-                    known_word.p_no = 0
+                    known_word.p_yes = "filtered"
+                    known_word.p_no = "filtered"
                 else:
                     new_set.add(known_word)
         self.unique_words = new_set
@@ -384,14 +387,14 @@ class DataSet:
 
 
 def transform(word):
-    """ Transforms a word to the wanted format
+    """ Transforms a word to the wanted format. If TOKENIZING_MODE is 1; we ignore punctuation too
+        Otherwise, it's simply a lower-case transformation
     """
     if TOKENIZING_MODE > 0:
         table = str.maketrans('', '', string.punctuation)
         stripped = word.translate(table)
         return stripped.lower()
-    else:
-        return word.lower()
+    return word.lower()
 
 
 if __name__ == '__main__':
