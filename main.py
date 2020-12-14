@@ -31,7 +31,7 @@ def main():
         col = line.split('\t')
         data.append_testing_set(TestingTweet(col[0], col[1], col[2]))
 
-    print(data)  # print statistics of the dataset
+    print(data)  # print statistics of the dataset; non-filtered
 
     data.calc_total_cond_probability()
     data.calc_testing_prob()
@@ -52,13 +52,14 @@ def main():
 
 
 def write_trace_and_eval_files(file_name, data):
-    """ Writes Trace File
-        1. find the higher probability between yes/no classes
-        2. if p_yes is larger; our predicted label is "yes", we compare this with the actual
-        3. label to determine the correctness ("correct" or "wrong") and mark it as a
-        4. true positive or false positive accordingly
-        5. same for no label
-        6. uses statistics to write eval files
+    """ Writes Trace and Eval Files
+        1. goes through DataSet's "data" testing_documents_list
+        2. find the higher probability between yes/no classes
+        3. if p_yes is larger; our predicted label is "yes", we compare this with the actual
+        label to determine the correctness ("correct" or "wrong") and mark it as a true positive
+        or false positive accordingly
+        4. repeat same for "no" label
+        5. uses statistics to write eval files
     """
     # statistics
     t_p = 0  # true positive
@@ -117,9 +118,10 @@ def calc_statistics(t_p, f_p, t_n, f_n):
     no_r = round((t_n)/(t_n+f_p), 4)
     yes_f1 = round(2*(yes_r*yes_p)/(yes_p+yes_r), 4)
     no_f1 = round(2*(no_r*no_p)/(no_p+no_r), 4)
-
+    print('Evaluation Peformance:')
     print("{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(
         accuracy, yes_p, no_p, yes_r, no_r, yes_f1, no_f1))
+    print()
 
     return "{0}\n{1}  {2}\n{3}  {4}\n{5}  {6}".format(accuracy, yes_p, no_p,
                                                       yes_r, no_r, yes_f1, no_f1)
