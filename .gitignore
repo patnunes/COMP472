@@ -2,3 +2,6 @@
 .DS_Store
 .vscode/
 __pycache__
+venv/
+/lstm-for-covid-disinformation-master/model.bin
+/lstm-for-covid-disinformation-master/model.txt
