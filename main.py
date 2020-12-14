@@ -35,7 +35,6 @@ def main():
 
     data.calc_total_cond_probability()
     data.calc_testing_prob()
-    data.confirm_count()
 
     t_p = 0  # true positive
     f_p = 0  # false positive
@@ -72,7 +71,6 @@ def main():
     print(data)  # print statistics of the filtered vocabulary dataset
     data.calc_total_cond_probability()
     data.calc_testing_prob()
-    data.confirm_count()
 
     # resetting these values for the 'calc_statistics' of the FV classifier
     t_p = 0  # true positive
@@ -200,8 +198,8 @@ class TweetWord:
         self.label_no = 0  # number of times the word appears with a 'no' label
         self.mentioned_tweets = set()  # set of tweet documents where word is mentioned
         self.add_count(tweet_origin)  # when first created, we want to add the details
-        self.p_yes = 0  # probability given yes
-        self.p_no = 0  # probability given no
+        self.p_yes = 0  # probability given yes; calculated later with prob_word_given_class_yes
+        self.p_no = 0  # probability given no; calculated later with prob_word_given_class_no
 
     def add_count(self, tweet_origin):
         """ If the TweetWord is not unique, we want to use add_count to note more usage
@@ -332,13 +330,13 @@ class DataSet:
 
     def __repr__(self):
         return (f'Dataset Statistics:: Filtered Vocabulary: {str(self.filtered_vocabulary)}\n'
-                f'Training Set Statistics: '
+                f'Training Set Statistics:\n'
                 f'Unique words: {len(self.unique_words)}({len(self.unique_words_actual)}), '
-                f'Total words: {self.total_words}, '
-                f'Total Documents: {len(self.training_documents_list)}, '
-                f'Yes words: {self.yes_label_words}, No words: {self.no_label_words}, '
-                f'Yes docs: {self.yes_label_documents}, No docs: {self.no_label_documents}\n'
-                f'Testing Set Statistics: Total Documents: {len(self.testing_documents_list)}')
+                f'Total words: {self.total_words}\n'
+                f'Yes words: {self.yes_label_words}, No words: {self.no_label_words}\n'
+                f'Total Tweets: {len(self.training_documents_list)}, '
+                f'Yes Tweets: {self.yes_label_documents}, No Tweets: {self.no_label_documents}\n'
+                f'Testing Set Statistics: Total Tweets: {len(self.testing_documents_list)}')
 
     def calc_total_cond_probability(self):
         """ Calculate Probability of every (unique) word in the (training) data set
@@ -368,6 +366,7 @@ class DataSet:
                     self.no_label_words = self.no_label_words - known_word.label_no
                     self.yes_label_words = self.yes_label_words - known_word.label_yes
                     self.unique_words_actual.remove(known_word.string)
+                    # the word's probabilities must be reset to avoid interfering with FV stats
                     known_word.p_yes = "filtered"
                     known_word.p_no = "filtered"
                 else:
@@ -376,6 +375,7 @@ class DataSet:
 
     def confirm_count(self):
         """ Confirms the yes_label_words and no_label_words parameters
+            A sanity check method
         """
         count_yes = 0
         count_no = 0
