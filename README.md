@@ -8,14 +8,12 @@ Repo for COMP472 assignments/projects
 
 | Names                              | Github        | Contribution      |
 | ---------------------------------- | ------------- | ----------------- |
-| Louis-Benjamin Durocher (40045719) | LouisBenjamin |     	|
-| Patricia Nunes (40006956)          | patnunes      |      |
-| Alan Giamatti (40041674)           | agiamatti     | 	 	|
+| Louis-Benjamin Durocher (40045719) | LouisBenjamin |   I/O and Probabilities  	|
+| Patricia Nunes (40006956)          | patnunes      |   I/O and Probabilities   |
+| Alan Giamatti (40041674)           | agiamatti     | 	 Component Logic	|
 
 # How to run the code
 
 1. cd to the directry where this repo was cloned in and type:
 
 ```python main.py```
-
-```python analysis.py```
