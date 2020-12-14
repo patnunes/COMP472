@@ -36,68 +36,55 @@ def main():
     data.calc_total_cond_probability()
     data.calc_testing_prob()
 
-    t_p = 0  # true positive
-    f_p = 0  # false positive
-    t_n = 0  # true negative
-    f_n = 0  # false negative
-
-    file_1 = open("trace_NB-BOW-OV.txt", "w+")
-    for document in data.testing_documents_list:
-        if document.p_yes > document.p_no:  # find the higher probability between yes/no classes
-            # if p_yes is larger; our predicted label is "yes", we compare this with the actual
-            # label to determine the correctness ("correct" or "wrong") and mark it as a
-            # true positive or false positive accordingly
-            correctness, t_p, f_p, t_n, f_n = determine_correctness(
-                document.label, "yes", t_p, f_p, t_n, f_n)
-            text = document.tweet_id + "  " + "yes" + "  " + \
-                str(document.p_yes) + "  " + document.label + "  " + correctness + "\n"
-            file_1.write(text)
-        else:
-            correctness, t_p, f_p, t_n, f_n = determine_correctness(
-                document.label, "no", t_p, f_p, t_n, f_n)
-            text = document.tweet_id + "  " + "no" + "  " + \
-                str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
-            file_1.write(text)
-    file_1.close()
-
     data.print_unique_words("words_OV")
 
-    file_3 = open("eval_NB-BOW-OV.txt", "w+")
-    file_3.write(calc_statistics(t_p, f_p, t_n, f_n))
-    file_3.close()
+    write_trace_and_eval_files('NB-BOW-OV', data)  # write trace and eval files of OV
 
-    data.implement_filtered_vocabulary()  # this method removes words with less than 2 USAGE
+    data.implement_filtered_vocabulary()  # removes words with less usage than USAGE_LIMIT
 
     print(data)  # print statistics of the filtered vocabulary dataset
     data.calc_total_cond_probability()
     data.calc_testing_prob()
 
-    # resetting these values for the 'calc_statistics' of the FV classifier
+    data.print_unique_words("words_FV")
+
+    write_trace_and_eval_files('NB-BOW-FV', data)  # write trace and eval files of FV
+
+
+def write_trace_and_eval_files(file_name, data):
+    """ Writes Trace File
+        1. find the higher probability between yes/no classes
+        2. if p_yes is larger; our predicted label is "yes", we compare this with the actual
+        3. label to determine the correctness ("correct" or "wrong") and mark it as a
+        4. true positive or false positive accordingly
+        5. same for no label
+        6. uses statistics to write eval files
+    """
+    # statistics
     t_p = 0  # true positive
     f_p = 0  # false positive
     t_n = 0  # true negative
     f_n = 0  # false negative
 
-    file_2 = open("trace_NB-BOW-FV.txt", "w+")
+    file_trace = open(f"trace_{file_name}.txt", "w+")
     for document in data.testing_documents_list:
         if document.p_yes > document.p_no:
             correctness, t_p, f_p, t_n, f_n = determine_correctness(
                 document.label, "yes", t_p, f_p, t_n, f_n)
             text = document.tweet_id + "  " + "yes" + "  " + \
                 str(document.p_yes) + "  " + document.label + "  " + correctness + "\n"
-            file_2.write(text)
+            file_trace.write(text)
         else:
             correctness, t_p, f_p, t_n, f_n = determine_correctness(
                 document.label, "no", t_p, f_p, t_n, f_n)
             text = document.tweet_id + "  " + "no" + "  " + \
                 str(document.p_no) + "  " + document.label + "  " + correctness + "\n"
-            file_2.write(text)
-    file_2.close()
+            file_trace.write(text)
+    file_trace.close()
 
-    data.print_unique_words("words_FV")
-    file_4 = open("eval_NB-BOW-FV.txt", "w+")
-    file_4.write(calc_statistics(t_p, f_p, t_n, f_n))
-    file_4.close()
+    file_eval = open(f"eval_{file_name}.txt", "w+")
+    file_eval.write(calc_statistics(t_p, f_p, t_n, f_n))
+    file_eval.close()
 
 
 def determine_correctness(label, predicted_label, t_p, f_p, t_n, f_n):
@@ -107,15 +94,15 @@ def determine_correctness(label, predicted_label, t_p, f_p, t_n, f_n):
         t_p += 1
         return 'correct', t_p, f_p, t_n, f_n
 
-    elif label == predicted_label and label == 'no':
+    if label == predicted_label and label == 'no':
         t_n += 1
         return 'correct', t_p, f_p, t_n, f_n
 
-    elif label != predicted_label and label == 'yes':
+    if label != predicted_label and label == 'yes':
         f_n += 1
         return 'wrong', t_p, f_p, t_n, f_n
 
-    elif label != predicted_label and label == 'no':
+    if label != predicted_label and label == 'no':
         f_p += 1
         return 'wrong', t_p, f_p, t_n, f_n
 
